@@ -1,0 +1,8 @@
+{
+  "name": "BUP Spark",
+  "description": "Brand Intelligence Platform integrating sentiment analysis, competitor share of voice, and custom AI brand reports.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
