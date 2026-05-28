@@ -31,8 +31,8 @@ export default function Docs() {
     alert('Docs configuration saved to local system state.');
   };
 
-  // Determine if the docs are currently visible based on constraints
-  const isVisible = () => {
+  // Determine if the tech docs are currently visible based on constraints
+  const isTechDocsVisible = () => {
     if (!config.isPublic) return false;
     const now = new Date();
     if (config.startDate && now < new Date(config.startDate)) return false;
@@ -40,36 +40,12 @@ export default function Docs() {
     return true;
   };
 
-  // Pre-render gate for visibility
-  if (!isVisible() && !isAdminMode) {
-    return (
-      <div className="flex-1 flex flex-col items-center justify-center py-24 text-center mt-12 animate-in fade-in zoom-in-95 duration-500">
-        <div className="bg-ink/5 p-6 rounded-full mb-6">
-          <Lock className="w-12 h-12 text-ink/40" />
-        </div>
-        <h2 className="text-3xl font-display font-bold text-ink mb-3">Documentation Restricted</h2>
-        <p className="text-muted text-lg max-w-md">
-          This pitch deck and technical documentation module is currently offline or outside its scheduled viewing window.
-        </p>
-        <button 
-          onClick={() => {
-            const code = window.prompt("Enter Admin Passcode:");
-            if (code === "bup2026") setIsAdminMode(true);
-          }} 
-          className="mt-10 text-sm font-medium text-blue bg-blue/10 px-5 py-2.5 rounded-full hover:bg-blue/20 transition-colors"
-        >
-          Launch Admin Override
-        </button>
-      </div>
-    );
-  }
-
   const tabs = [
     { id: 'pitch', label: 'Pitch Deck', icon: Presentation },
-    { id: 'tech', label: 'Tech Architecture', icon: Code },
+    (isTechDocsVisible() || isAdminMode) ? { id: 'tech', label: 'Tech Architecture', icon: Code } : null,
     { id: 'team', label: 'Team Showcase', icon: Users },
     { id: 'admin', label: 'Admin & Control', icon: Settings },
-  ];
+  ].filter(Boolean) as { id: string, label: string, icon: any }[];
 
   return (
     <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-8 animate-in fade-in duration-500 pt-4">
@@ -88,7 +64,19 @@ export default function Docs() {
           {tabs.map(tab => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => {
+                if (tab.id === 'admin') {
+                  const code = window.prompt("Enter Admin Passcode:");
+                  if (code === "bup@2026") {
+                    setIsAdminMode(true);
+                    setActiveTab('admin');
+                  } else if (code !== null) {
+                    alert("Incorrect passcode.");
+                  }
+                } else {
+                  setActiveTab(tab.id);
+                }
+              }}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
                 activeTab === tab.id 
                   ? 'bg-ink text-white shadow-md' 
@@ -100,22 +88,8 @@ export default function Docs() {
             </button>
           ))}
         </nav>
-
-        {!isAdminMode && (
-          <button 
-            onClick={() => {
-              const code = window.prompt("Enter Admin Passcode (Hint: type 'bup2026'):");
-              if (code === "bup2026") {
-                setIsAdminMode(true);
-              } else if (code !== null) {
-                alert("Incorrect passcode.");
-              }
-            }}
-            className="mt-8 flex items-center gap-2 text-xs text-muted hover:text-ink w-full justify-start px-4 transition-colors"
-          >
-            <Settings size={14} /> Admin Access
-          </button>
-        )}
+        
+        {/* Admin mode logic is seamlessly integrated into tab clicks above */}
         
         {isAdminMode && (
            <div className="mt-8 p-4 bg-amber/10 border border-amber/20 rounded-xl relative overflow-hidden">
@@ -126,7 +100,7 @@ export default function Docs() {
              <p className="text-xs font-bold tracking-wide uppercase text-amber">Admin Override Active</p>
              <p className="text-xs mt-1 text-amber/80">You are viewing bypassing visibility locks.</p>
              {!isAdminUser && (
-               <button onClick={() => setIsAdminMode(false)} className="text-xs text-amber font-medium hover:underline mt-3 block">Exit Admin Mode</button>
+               <button onClick={() => { setIsAdminMode(false); setActiveTab('pitch'); }} className="text-xs text-amber font-medium hover:underline mt-3 block">Exit Admin Mode</button>
              )}
            </div>
         )}
@@ -156,7 +130,7 @@ export default function Docs() {
                 </div>
                 <h3 className="font-bold text-ink text-2xl">The Problem</h3>
                 <p className="text-muted leading-relaxed">
-                  Brand tracking today is reactive, expensive, and slow. Marketing executives wait weeks for disjointed PDF reports compiled by human analysts using legacy scraping tools. You cannot simulate a crisis or a campaign drop before it happens.
+                  Brands struggle to quickly analyze market sentiment, monitor competitor share of voice, and generate actionable insights without expensive, highly complex enterprise tools. Additionally, building a consistent "brand persona" for tracking and daily campaign simulation is often a manual, time-consuming process that slows down marketing velocity.
                 </p>
               </div>
               <div className="p-8 border border-ink/10 rounded-[2rem] space-y-4 bg-green/5 hover:bg-green/10 transition-colors">
@@ -165,7 +139,7 @@ export default function Docs() {
                 </div>
                 <h3 className="font-bold text-ink text-2xl">The Solution</h3>
                 <p className="text-muted leading-relaxed">
-                  We automate executive intelligence. Users configure their mission, metrics, and competitors. BUP Spark instantly runs synthetic simulations through Gemini, producing Share of Voice map metrics and dynamic brand health scores in seconds.
+                  BUP Spark solves this by introducing the "Brand Twin"—an AI-powered virtual replica of a brand's core identity. It features a unified, real-time dashboard displaying aggregated brand scores, structured sentiment timelines, and direct share-of-voice mapping. By leveraging Google's Gemini models via a secure Node.js backend proxy, the platform transforms raw social data into instant, one-click executive brand analysis reports with high-contrast highlights and concrete recommended actions.
                 </p>
               </div>
             </div>
@@ -253,17 +227,82 @@ export default function Docs() {
               <p className="text-muted text-lg border-b border-ink/10 pb-8">The builders behind The Infinity AI BuildFest 2026 Submission.</p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {/* Main Team Member Card */}
-              <div className="flex items-center gap-5 p-6 border border-ink/10 rounded-[2rem] bg-white shadow-sm hover:border-blue/30 transition-colors">
-                <div className="w-20 h-20 bg-gradient-to-br from-blue to-blue/60 text-white rounded-full flex flex-col items-center justify-center font-display font-bold text-2xl uppercase shadow-md">
-                  BS
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Leader */}
+              <div className="flex flex-col gap-4 p-6 border border-ink/10 rounded-[2rem] bg-white shadow-sm hover:border-blue/30 transition-colors">
+                <div className="flex items-start justify-between">
+                  <div className="w-14 h-14 bg-blue/10 text-blue rounded-xl flex flex-col items-center justify-center font-display font-bold text-xl uppercase shadow-sm">
+                    MS
+                  </div>
+                  <span className="bg-blue/10 text-blue px-2 py-1 rounded-full text-[10px] uppercase font-bold tracking-wider">Leader</span>
                 </div>
                 <div>
-                  <h4 className="font-bold text-ink text-xl font-display mb-1">BUP Spark Team</h4>
-                  <p className="text-sm rounded-full bg-ink/5 px-3 py-1 text-ink inline-block font-medium mb-2">BuildFest Contributor</p>
-                  <div>
-                    <a href="mailto:bupspark@gmail.com" className="text-sm text-blue hover:underline">bupspark@gmail.com</a>
+                  <h4 className="font-bold text-ink text-lg leading-tight font-display">Md Shahriar Nasim Shawon</h4>
+                  <div className="flex flex-col gap-1.5 mt-3">
+                    <span className="text-[11px] rounded-md bg-ink/5 px-2 py-1 text-ink font-medium">Team Leader / Project Coordinator</span>
+                    <span className="text-[11px] rounded-md bg-ink/5 px-2 py-1 text-ink font-medium">Business Analyst / Data Scientist</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Members */}
+              <div className="flex flex-col gap-4 p-6 border border-ink/10 rounded-[2rem] bg-white shadow-sm hover:border-blue/30 transition-colors">
+                <div className="flex items-start justify-between">
+                  <div className="w-14 h-14 bg-green/10 text-green rounded-xl flex flex-col items-center justify-center font-display font-bold text-xl uppercase shadow-sm">
+                    SA
+                  </div>
+                  <span className="bg-ink/5 text-ink px-2 py-1 rounded-full text-[10px] uppercase font-bold tracking-wider">Member</span>
+                </div>
+                <div>
+                  <h4 className="font-bold text-ink text-lg leading-tight font-display">SAFIUL ALAM</h4>
+                  <div className="flex flex-col gap-1.5 mt-3">
+                    <span className="text-[11px] rounded-md bg-ink/5 px-2 py-1 text-ink font-medium">UI/UX / Frontend Developer</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-4 p-6 border border-ink/10 rounded-[2rem] bg-white shadow-sm hover:border-blue/30 transition-colors">
+                <div className="flex items-start justify-between">
+                  <div className="w-14 h-14 bg-amber/10 text-amber rounded-xl flex flex-col items-center justify-center font-display font-bold text-xl uppercase shadow-sm">
+                    SS
+                  </div>
+                  <span className="bg-ink/5 text-ink px-2 py-1 rounded-full text-[10px] uppercase font-bold tracking-wider">Member</span>
+                </div>
+                <div>
+                  <h4 className="font-bold text-ink text-lg leading-tight font-display">Sumaya Sanzida</h4>
+                  <div className="flex flex-col gap-1.5 mt-3">
+                    <span className="text-[11px] rounded-md bg-ink/5 px-2 py-1 text-ink font-medium">UI/UX / Frontend Developer</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-4 p-6 border border-ink/10 rounded-[2rem] bg-white shadow-sm hover:border-blue/30 transition-colors">
+                <div className="flex items-start justify-between">
+                  <div className="w-14 h-14 bg-purple-100 text-purple-600 rounded-xl flex flex-col items-center justify-center font-display font-bold text-xl uppercase shadow-sm">
+                    SS
+                  </div>
+                  <span className="bg-ink/5 text-ink px-2 py-1 rounded-full text-[10px] uppercase font-bold tracking-wider">Member</span>
+                </div>
+                <div>
+                  <h4 className="font-bold text-ink text-lg leading-tight font-display">Sadman Sakib</h4>
+                   <div className="flex flex-col gap-1.5 mt-3">
+                    <span className="text-[11px] rounded-md bg-ink/5 px-2 py-1 text-ink font-medium">Backend / Database / Scraper Engineer</span>
+                    <span className="text-[11px] rounded-md bg-ink/5 px-2 py-1 text-ink font-medium">Presentation / Communication Lead</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-4 p-6 border border-ink/10 rounded-[2rem] bg-white shadow-sm hover:border-blue/30 transition-colors">
+                <div className="flex items-start justify-between">
+                  <div className="w-14 h-14 bg-pink-100 text-pink-600 rounded-xl flex flex-col items-center justify-center font-display font-bold text-xl uppercase shadow-sm">
+                    MN
+                  </div>
+                  <span className="bg-ink/5 text-ink px-2 py-1 rounded-full text-[10px] uppercase font-bold tracking-wider">Member</span>
+                </div>
+                <div>
+                  <h4 className="font-bold text-ink text-lg leading-tight font-display">Md. Al- Shariar Nadif</h4>
+                  <div className="flex flex-col gap-1.5 mt-3">
+                    <span className="text-[11px] rounded-md bg-ink/5 px-2 py-1 text-ink font-medium">Presentation / Communication Lead</span>
                   </div>
                 </div>
               </div>
