@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutGrid, SlidersHorizontal, BarChart3, PenTool, Users, Heart, LogOut, Sparkles } from 'lucide-react';
+import { LayoutGrid, SlidersHorizontal, BarChart3, PenTool, Users, Heart, LogOut, Sparkles, Book } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useAuth } from '../hooks/useAuth';
 
@@ -11,6 +11,7 @@ const NAV_ITEMS = [
   { path: '/content', label: 'Content Engine', icon: PenTool },
   { path: '/creators', label: 'Creator Match', icon: Users },
   { path: '/health', label: 'Brand Health', icon: Heart },
+  { path: '/docs', label: 'Technical Docs', icon: Book },
 ];
 
 export function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (o: boolean) => void }) {

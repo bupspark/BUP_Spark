@@ -12,6 +12,7 @@ import CampaignSimulator from './pages/CampaignSimulator';
 import ContentEngine from './pages/ContentEngine';
 import CreatorMatch from './pages/CreatorMatch';
 import BrandHealth from './pages/BrandHealth';
+import Docs from './pages/Docs';
 import Login from './pages/Login';
 import { AuthProvider, useAuth } from './hooks/useAuth';
 import { BrandProvider } from './hooks/useBrand';
@@ -36,6 +37,7 @@ function AppRoutes() {
         <Route path="/content" element={<ContentEngine />} />
         <Route path="/creators" element={<CreatorMatch />} />
         <Route path="/health" element={<BrandHealth />} />
+        <Route path="/docs" element={<Docs />} />
       </Route>
     </Routes>
   );
