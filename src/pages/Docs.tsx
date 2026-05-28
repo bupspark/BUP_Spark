@@ -10,6 +10,8 @@ export default function Docs() {
 
   const [activeTab, setActiveTab] = useState('pitch');
   const [isAdminMode, setIsAdminMode] = useState(isAdminUser);
+  const [adminPasscode, setAdminPasscode] = useState('');
+  const [passcodeError, setPasscodeError] = useState(false);
   
   const [config, setConfig] = useState({
     isPublic: true,
@@ -40,12 +42,17 @@ export default function Docs() {
     return true;
   };
 
+  const showContent = isTechDocsVisible() || isAdminMode;
+
   const tabs = [
-    { id: 'pitch', label: 'Pitch Deck', icon: Presentation },
-    (isTechDocsVisible() || isAdminMode) ? { id: 'tech', label: 'Tech Architecture', icon: Code } : null,
-    { id: 'team', label: 'Team Showcase', icon: Users },
+    showContent ? { id: 'pitch', label: 'Pitch Deck', icon: Presentation } : null,
+    showContent ? { id: 'tech', label: 'Tech Architecture', icon: Code } : null,
+    showContent ? { id: 'team', label: 'Team Showcase', icon: Users } : null,
     { id: 'admin', label: 'Admin & Control', icon: Settings },
   ].filter(Boolean) as { id: string, label: string, icon: any }[];
+
+  const currentTab = showContent ? activeTab : 'admin';
+  const showPasscodeScreen = !isAdminMode && currentTab === 'admin';
 
   return (
     <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-8 animate-in fade-in duration-500 pt-4">
@@ -66,24 +73,23 @@ export default function Docs() {
               key={tab.id}
               onClick={() => {
                 if (tab.id === 'admin') {
-                  const code = window.prompt("Enter Admin Passcode:");
-                  if (code === "bup@2026") {
-                    setIsAdminMode(true);
-                    setActiveTab('admin');
-                  } else if (code !== null) {
-                    alert("Incorrect passcode.");
+                  setActiveTab('admin');
+                  if (!isAdminUser) {
+                    setIsAdminMode(false);
+                    setAdminPasscode('');
+                    setPasscodeError(false);
                   }
                 } else {
                   setActiveTab(tab.id);
                 }
               }}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-                activeTab === tab.id 
+                currentTab === tab.id 
                   ? 'bg-ink text-white shadow-md' 
                   : 'text-muted hover:bg-ink/5 hover:text-ink'
               }`}
             >
-              <tab.icon size={18} className={activeTab === tab.id ? 'opacity-100' : 'opacity-70'} />
+              <tab.icon size={18} className={currentTab === tab.id ? 'opacity-100' : 'opacity-70'} />
               {tab.label}
             </button>
           ))}
@@ -110,7 +116,7 @@ export default function Docs() {
       <div className="flex-1 bg-white border border-ink/10 rounded-[2rem] p-6 md:p-10 shadow-sm min-h-[600px]">
         
         {/* ================= PITCH DECK ================= */}
-        {activeTab === 'pitch' && (
+        {currentTab === 'pitch' && (
           <div className="space-y-10 animate-in fade-in slide-in-from-bottom-2">
             <div className="bg-gradient-to-br from-blue/10 via-blue/5 to-transparent border border-blue/10 p-10 rounded-[2rem] relative overflow-hidden">
               <div className="absolute top-0 right-0 p-8 opacity-10">
@@ -168,7 +174,7 @@ export default function Docs() {
         )}
 
         {/* ================= TECH ARCHITECTURE ================= */}
-        {activeTab === 'tech' && (
+        {currentTab === 'tech' && (
           <div className="space-y-10 animate-in fade-in slide-in-from-bottom-2">
             <div>
               <h2 className="text-3xl font-display font-bold text-ink mb-3">Technical Documentation</h2>
@@ -220,7 +226,7 @@ export default function Docs() {
         )}
 
         {/* ================= TEAM ================= */}
-        {activeTab === 'team' && (
+        {currentTab === 'team' && (
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2">
             <div>
               <h2 className="text-3xl font-display font-bold text-ink mb-3">Team Showcase</h2>
@@ -230,10 +236,7 @@ export default function Docs() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {/* Leader */}
               <div className="flex flex-col gap-4 p-6 border border-ink/10 rounded-[2rem] bg-white shadow-sm hover:border-blue/30 transition-colors">
-                <div className="flex items-start justify-between">
-                  <div className="w-14 h-14 bg-blue/10 text-blue rounded-xl flex flex-col items-center justify-center font-display font-bold text-xl uppercase shadow-sm">
-                    MS
-                  </div>
+                <div className="flex items-start justify-end">
                   <span className="bg-blue/10 text-blue px-2 py-1 rounded-full text-[10px] uppercase font-bold tracking-wider">Leader</span>
                 </div>
                 <div>
@@ -247,10 +250,7 @@ export default function Docs() {
 
               {/* Members */}
               <div className="flex flex-col gap-4 p-6 border border-ink/10 rounded-[2rem] bg-white shadow-sm hover:border-blue/30 transition-colors">
-                <div className="flex items-start justify-between">
-                  <div className="w-14 h-14 bg-green/10 text-green rounded-xl flex flex-col items-center justify-center font-display font-bold text-xl uppercase shadow-sm">
-                    SA
-                  </div>
+                <div className="flex items-start justify-end">
                   <span className="bg-ink/5 text-ink px-2 py-1 rounded-full text-[10px] uppercase font-bold tracking-wider">Member</span>
                 </div>
                 <div>
@@ -262,10 +262,7 @@ export default function Docs() {
               </div>
 
               <div className="flex flex-col gap-4 p-6 border border-ink/10 rounded-[2rem] bg-white shadow-sm hover:border-blue/30 transition-colors">
-                <div className="flex items-start justify-between">
-                  <div className="w-14 h-14 bg-amber/10 text-amber rounded-xl flex flex-col items-center justify-center font-display font-bold text-xl uppercase shadow-sm">
-                    SS
-                  </div>
+                <div className="flex items-start justify-end">
                   <span className="bg-ink/5 text-ink px-2 py-1 rounded-full text-[10px] uppercase font-bold tracking-wider">Member</span>
                 </div>
                 <div>
@@ -277,10 +274,7 @@ export default function Docs() {
               </div>
 
               <div className="flex flex-col gap-4 p-6 border border-ink/10 rounded-[2rem] bg-white shadow-sm hover:border-blue/30 transition-colors">
-                <div className="flex items-start justify-between">
-                  <div className="w-14 h-14 bg-purple-100 text-purple-600 rounded-xl flex flex-col items-center justify-center font-display font-bold text-xl uppercase shadow-sm">
-                    SS
-                  </div>
+                <div className="flex items-start justify-end">
                   <span className="bg-ink/5 text-ink px-2 py-1 rounded-full text-[10px] uppercase font-bold tracking-wider">Member</span>
                 </div>
                 <div>
@@ -293,10 +287,7 @@ export default function Docs() {
               </div>
 
               <div className="flex flex-col gap-4 p-6 border border-ink/10 rounded-[2rem] bg-white shadow-sm hover:border-blue/30 transition-colors">
-                <div className="flex items-start justify-between">
-                  <div className="w-14 h-14 bg-pink-100 text-pink-600 rounded-xl flex flex-col items-center justify-center font-display font-bold text-xl uppercase shadow-sm">
-                    MN
-                  </div>
+                <div className="flex items-start justify-end">
                   <span className="bg-ink/5 text-ink px-2 py-1 rounded-full text-[10px] uppercase font-bold tracking-wider">Member</span>
                 </div>
                 <div>
@@ -318,78 +309,124 @@ export default function Docs() {
         )}
 
         {/* ================= ADMIN / SETTINGS ================= */}
-        {activeTab === 'admin' && (
+        {currentTab === 'admin' && (
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2">
-            <div>
-              <h2 className="text-3xl font-display font-bold text-ink mb-3">Documentation Access Control</h2>
-              <p className="text-muted text-lg border-b border-ink/10 pb-8">Manage live visibility, scheduling gates, and publishing states of this /docs module.</p>
-            </div>
-
-            <div className="max-w-2xl space-y-6">
-              {/* Public Toggle */}
-              <div className="flex items-center justify-between p-6 border border-ink/10 rounded-[2rem] bg-ink/5">
-                <div>
-                  <h4 className="font-bold text-ink text-lg flex items-center gap-2 mb-1">
-                    {config.isPublic ? <Eye size={20} className="text-green" /> : <EyeOff size={20} className="text-muted" />}
-                    Public Visibility Override
-                  </h4>
-                  <p className="text-sm text-muted">When toggled OFF, this docs page drops a lock wall to all non-admin viewers.</p>
+            {showPasscodeScreen ? (
+              <div className="flex flex-col items-center justify-center py-20">
+                <div className="w-16 h-16 bg-blue/10 text-blue rounded-full flex items-center justify-center mb-6">
+                  <Lock size={32} />
                 </div>
-                <label className="relative inline-flex items-center cursor-pointer scale-110 ml-4">
-                  <input 
-                    type="checkbox" 
-                    className="sr-only peer" 
-                    checked={config.isPublic}
-                    onChange={(e) => setConfig({ ...config, isPublic: e.target.checked })}
+                <h3 className="text-2xl font-display font-bold text-ink mb-2">Admin Access Required</h3>
+                <p className="text-muted mb-8 text-center max-w-sm">Please enter the administrative passcode to manage system visibility gates.</p>
+                <div className="flex flex-col gap-3 w-full max-w-xs">
+                  <input
+                    type="password"
+                    placeholder="Enter Passcode"
+                    value={adminPasscode}
+                    onChange={(e) => setAdminPasscode(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        if (adminPasscode === 'bup@2026') {
+                          setIsAdminMode(true);
+                          setActiveTab('admin');
+                        } else {
+                          setPasscodeError(true);
+                        }
+                      }
+                    }}
+                    className={`w-full px-4 py-3 bg-white border ${passcodeError ? 'border-red-500/50 focus:border-red-500 focus:ring-red-500/10' : 'border-ink/10 focus:border-blue focus:ring-blue/10'} rounded-xl text-center font-mono focus:outline-none focus:ring-2 transition-all`}
                   />
-                  <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue"></div>
-                </label>
+                  {passcodeError && (
+                    <p className="text-red-500 text-sm font-medium text-center">Incorrect passcode</p>
+                  )}
+                  <button
+                    onClick={() => {
+                      if (adminPasscode === 'bup@2026') {
+                        setIsAdminMode(true);
+                        setActiveTab('admin');
+                      } else {
+                        setPasscodeError(true);
+                      }
+                    }}
+                    className="w-full bg-ink text-white font-medium py-3 rounded-xl hover:bg-ink/80 transition-colors"
+                  >
+                    Authenticate
+                  </button>
+                </div>
               </div>
-
-              {/* Scheduling Gate */}
-              <div className="p-8 border border-ink/10 rounded-[2rem] space-y-6 bg-white">
+            ) : (
+              <>
                 <div>
-                    <h4 className="font-bold text-ink text-lg flex items-center gap-2 mb-1">
-                       <Calendar size={20} className="text-blue" />
-                       Evaluation Scheduling Window
-                    </h4>
-                    <p className="text-sm text-muted">Configure calendar constraints to automatically reveal or hide the pitch deck for judge evaluation periods.</p>
+                  <h2 className="text-3xl font-display font-bold text-ink mb-3">Documentation Access Control</h2>
+                  <p className="text-muted text-lg border-b border-ink/10 pb-8">Manage live visibility, scheduling gates, and publishing states of this /docs module.</p>
                 </div>
-                
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 bg-ink/5 p-6 rounded-2xl">
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-wider text-ink/70">Available From</label>
-                    <input 
-                      type="datetime-local" 
-                      value={config.startDate}
-                      onChange={(e) => setConfig({ ...config, startDate: e.target.value })}
-                      className="w-full px-4 py-3 bg-white border border-ink/10 rounded-xl text-sm focus:outline-none focus:border-blue focus:ring-2 focus:ring-blue/10 transition-all font-mono"
-                    />
+
+                <div className="max-w-2xl space-y-6">
+                  {/* Public Toggle */}
+                  <div className="flex items-center justify-between p-6 border border-ink/10 rounded-[2rem] bg-ink/5">
+                    <div>
+                      <h4 className="font-bold text-ink text-lg flex items-center gap-2 mb-1">
+                        {config.isPublic ? <Eye size={20} className="text-green" /> : <EyeOff size={20} className="text-muted" />}
+                        Public Visibility Override
+                      </h4>
+                      <p className="text-sm text-muted">When toggled OFF, this docs page drops a lock wall to all non-admin viewers.</p>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer scale-110 ml-4">
+                      <input 
+                        type="checkbox" 
+                        className="sr-only peer" 
+                        checked={config.isPublic}
+                        onChange={(e) => setConfig({ ...config, isPublic: e.target.checked })}
+                      />
+                      <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue"></div>
+                    </label>
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-wider text-ink/70">Available Until</label>
-                    <input 
-                      type="datetime-local" 
-                      value={config.endDate}
-                      onChange={(e) => setConfig({ ...config, endDate: e.target.value })}
-                      className="w-full px-4 py-3 bg-white border border-ink/10 rounded-xl text-sm focus:outline-none focus:border-blue focus:ring-2 focus:ring-blue/10 transition-all font-mono"
-                    />
+
+                  {/* Scheduling Gate */}
+                  <div className="p-8 border border-ink/10 rounded-[2rem] space-y-6 bg-white">
+                    <div>
+                        <h4 className="font-bold text-ink text-lg flex items-center gap-2 mb-1">
+                           <Calendar size={20} className="text-blue" />
+                           Evaluation Scheduling Window
+                        </h4>
+                        <p className="text-sm text-muted">Configure calendar constraints to automatically reveal or hide the pitch deck for judge evaluation periods.</p>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 bg-ink/5 p-6 rounded-2xl">
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold uppercase tracking-wider text-ink/70">Available From</label>
+                        <input 
+                          type="datetime-local" 
+                          value={config.startDate}
+                          onChange={(e) => setConfig({ ...config, startDate: e.target.value })}
+                          className="w-full px-4 py-3 bg-white border border-ink/10 rounded-xl text-sm focus:outline-none focus:border-blue focus:ring-2 focus:ring-blue/10 transition-all font-mono"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold uppercase tracking-wider text-ink/70">Available Until</label>
+                        <input 
+                          type="datetime-local" 
+                          value={config.endDate}
+                          onChange={(e) => setConfig({ ...config, endDate: e.target.value })}
+                          className="w-full px-4 py-3 bg-white border border-ink/10 rounded-xl text-sm focus:outline-none focus:border-blue focus:ring-2 focus:ring-blue/10 transition-all font-mono"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Save Controls */}
+                  <div className="pt-6 flex justify-end px-2 border-t border-ink/10 mt-8">
+                    <button 
+                      onClick={handleSaveConfig}
+                      className="flex items-center gap-2 bg-ink text-white px-8 py-3.5 rounded-full font-medium hover:bg-ink/80 transition-all shadow-md active:scale-95"
+                    >
+                      <Save size={18} />
+                      Persist Configuration State
+                    </button>
                   </div>
                 </div>
-              </div>
-
-              {/* Save Controls */}
-              <div className="pt-6 flex justify-end px-2 border-t border-ink/10 mt-8">
-                <button 
-                  onClick={handleSaveConfig}
-                  className="flex items-center gap-2 bg-ink text-white px-8 py-3.5 rounded-full font-medium hover:bg-ink/80 transition-all shadow-md active:scale-95"
-                >
-                  <Save size={18} />
-                  Persist Configuration State
-                </button>
-              </div>
-
-            </div>
+              </>
+            )}
           </div>
         )}
       </div>
