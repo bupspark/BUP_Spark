@@ -10,16 +10,13 @@ async function startServer() {
 
   app.use(express.json({ limit: "50mb" }));
 
-  // Initialize Gemini
-  let ai: GoogleGenAI | null = null;
+  // Initialize Gemini dynamically per request to support on-the-fly API key updates
   const getAi = () => {
-    if (!ai) {
-      if (!process.env.GEMINI_API_KEY) {
-        throw new Error("GEMINI_API_KEY environment variable is required.");
-      }
-      ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+    const key = process.env.GEMINI_API_KEY;
+    if (!key) {
+      throw new Error("GEMINI_API_KEY environment variable is missing. Please configuration your Gemini API Key in the AI Studio Settings (Env Variables).");
     }
-    return ai;
+    return new GoogleGenAI({ apiKey: key });
   };
 
   // API Routes

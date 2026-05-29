@@ -13,7 +13,15 @@ export function useGemini() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt, system, isJson: true })
       });
-      const data = await response.json();
+      
+      const text = await response.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (err) {
+        throw new Error(`Server Error (${response.status}): ${text.slice(0, 150) || 'Invalid server response'}`);
+      }
+
       if (!response.ok) throw new Error(data.error || 'Failed to fetch AI response');
       setIsLoading(false);
       return data.result;
@@ -33,7 +41,15 @@ export function useGemini() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt, system, isJson: false })
       });
-      const data = await response.json();
+      
+      const text = await response.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (err) {
+        throw new Error(`Server Error (${response.status}): ${text.slice(0, 150) || 'Invalid server response'}`);
+      }
+
       if (!response.ok) throw new Error(data.error || 'Failed to fetch AI response');
       setIsLoading(false);
       return data.result;
