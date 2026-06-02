@@ -20,7 +20,7 @@ async function startServer() {
   };
 
   // API Routes
-  app.post("/api/gemini", async (req, res) => {
+  app.post("/api/spark", async (req, res) => {
     try {
       const aiClient = getAi();
       const { prompt, system, isJson } = req.body;

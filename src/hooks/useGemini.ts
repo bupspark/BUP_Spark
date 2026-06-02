@@ -8,7 +8,7 @@ export function useGemini() {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch('/api/gemini', {
+      const response = await fetch('/api/spark', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt, system, isJson: true })
@@ -36,7 +36,7 @@ export function useGemini() {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch('/api/gemini', {
+      const response = await fetch('/api/spark', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt, system, isJson: false })
