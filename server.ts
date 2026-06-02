@@ -35,7 +35,7 @@ async function startServer() {
       }
 
       const response = await aiClient.models.generateContent({
-        model: "gemini-3.5-flash",
+        model: "gemini-3.1-flash-lite",
         contents: prompt,
         config,
       });
