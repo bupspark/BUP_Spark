@@ -27,10 +27,10 @@ async function startServer() {
   };
 
   // API Routes
-  app.post("/api/spark", async (req, res) => {
+  app.post("/api/chat", async (req, res) => {
     const startTime = Date.now();
     const { prompt, system, isJson } = req.body;
-    console.log(`[API /api/spark] Request started. isJson: ${!!isJson}, Prompt length: ${prompt?.length || 0}`);
+    console.log(`[API /api/chat] Request started. isJson: ${!!isJson}, Prompt length: ${prompt?.length || 0}`);
     try {
       const aiClient = getAi();
       
@@ -44,13 +44,13 @@ async function startServer() {
       }
 
       const response = await aiClient.models.generateContent({
-        model: "gemini-3.5-flash",
+        model: "gemini-3.1-flash-lite",
         contents: prompt,
         config,
       });
 
       let raw = response.text || "";
-      console.log(`[API /api/spark] Successful model response in ${Date.now() - startTime}ms. Raw text length: ${raw.length}`);
+      console.log(`[API /api/chat] Successful model response in ${Date.now() - startTime}ms. Raw text length: ${raw.length}`);
 
       if (isJson) {
         let clean = raw.replace(/```json|```/g, "").trim();
@@ -81,7 +81,7 @@ async function startServer() {
       }
 
     } catch (error: any) {
-      console.error(`[API /api/spark] Error after ${Date.now() - startTime}ms:`, error);
+      console.error(`[API /api/chat] Error after ${Date.now() - startTime}ms:`, error);
       res.status(500).json({ error: error.message || "Internal server error" });
     }
   });
