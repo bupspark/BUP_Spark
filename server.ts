@@ -21,9 +21,11 @@ async function startServer() {
 
   // API Routes
   app.post("/api/spark", async (req, res) => {
+    const startTime = Date.now();
+    const { prompt, system, isJson } = req.body;
+    console.log(`[API /api/spark] Request started. isJson: ${!!isJson}, Prompt length: ${prompt?.length || 0}`);
     try {
       const aiClient = getAi();
-      const { prompt, system, isJson } = req.body;
       
       const config: any = {
         systemInstruction: system || "",
@@ -41,6 +43,7 @@ async function startServer() {
       });
 
       let raw = response.text || "";
+      console.log(`[API /api/spark] Successful model response in ${Date.now() - startTime}ms. Raw text length: ${raw.length}`);
 
       if (isJson) {
         let clean = raw.replace(/```json|```/g, "").trim();
@@ -71,7 +74,7 @@ async function startServer() {
       }
 
     } catch (error: any) {
-      console.error("Gemini API Error:", error);
+      console.error(`[API /api/spark] Error after ${Date.now() - startTime}ms:`, error);
       res.status(500).json({ error: error.message || "Internal server error" });
     }
   });
