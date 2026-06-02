@@ -1,5 +1,17 @@
 import { useState, useCallback } from 'react';
 
+function parseErrorMessage(errMessage: string): string {
+  try {
+    const parsed = JSON.parse(errMessage);
+    if (parsed && parsed.error && parsed.error.message) {
+      return parsed.error.message;
+    }
+  } catch {
+    // If not JSON, return original message
+  }
+  return errMessage;
+}
+
 export function useGemini() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -26,7 +38,8 @@ export function useGemini() {
       setIsLoading(false);
       return data.result;
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      const msg = err instanceof Error ? err.message : 'An error occurred';
+      setError(parseErrorMessage(msg));
       setIsLoading(false);
       throw err;
     }
@@ -54,7 +67,8 @@ export function useGemini() {
       setIsLoading(false);
       return data.result;
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      const msg = err instanceof Error ? err.message : 'An error occurred';
+      setError(parseErrorMessage(msg));
       setIsLoading(false);
       throw err;
     }
