@@ -17,7 +17,14 @@ async function startServer() {
     if (!key) {
       throw new Error("GEMINI_API_KEY environment variable is missing. Please configuration your Gemini API Key in the AI Studio Settings (Env Variables).");
     }
-    return new GoogleGenAI({ apiKey: key });
+    return new GoogleGenAI({ 
+      apiKey: key,
+      httpOptions: {
+        headers: {
+          'User-Agent': 'aistudio-build',
+        }
+      }
+    });
   };
 
   // API Routes
@@ -38,7 +45,7 @@ async function startServer() {
       }
 
       const response = await aiClient.models.generateContent({
-        model: "gemini-2.0-flash-lite",
+        model: "gemini-3.1-flash-lite",
         contents: prompt,
         config,
       });
