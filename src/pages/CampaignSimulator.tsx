@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useGemini } from '../hooks/useGemini';
 import { useBrand } from '../hooks/useBrand';
-import { Sparkles, Star, BarChart3, ArrowRight } from 'lucide-react';
+import { Sparkles, Star, BarChart3, ArrowRight, Eye, MousePointerClick, ShoppingBag, Facebook, Instagram, Youtube, Music } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const formatBDT = (val: number) => `৳${val.toLocaleString('en-IN')}`;
@@ -77,18 +77,19 @@ Return JSON only:
               <label className="block text-xs font-bold uppercase tracking-wide text-ink/70 mb-3">Campaign Goal</label>
               <div className="grid grid-cols-3 gap-2">
                 {[
-                  { id: 'Reach', icon: '👁️', label: 'Reach' },
-                  { id: 'Clicks', icon: '👆', label: 'Clicks' },
-                  { id: 'Sales', icon: '🛍️', label: 'Sales' },
+                  { id: 'Reach', icon: <Eye size={18} />, label: 'Reach' },
+                  { id: 'Clicks', icon: <MousePointerClick size={18} />, label: 'Clicks' },
+                  { id: 'Sales', icon: <ShoppingBag size={18} />, label: 'Sales' },
                 ].map(g => (
                   <button
+                    id={`goal-btn-${g.id}`}
                     key={g.id}
                     onClick={() => setGoal(g.id)}
                     className={`flex flex-col items-center justify-center p-3 rounded-xl border-2 transition-all ${
-                      goal === g.id ? 'border-amber bg-amber/5' : 'border-ink/5 bg-cream hover:border-ink/10'
+                      goal === g.id ? 'border-amber bg-amber/5 text-ink' : 'border-ink/5 bg-cream text-ink/80 hover:border-ink/10'
                     }`}
                   >
-                    <span className="text-2xl mb-1">{g.icon}</span>
+                    <span className="mb-1 text-amber">{g.icon}</span>
                     <span className="text-xs font-bold">{g.label}</span>
                   </button>
                 ))}
@@ -132,21 +133,22 @@ Return JSON only:
               <label className="block text-xs font-bold uppercase tracking-wide text-ink/70 mb-3">Platforms</label>
               <div className="flex flex-wrap gap-2">
                 {[
-                  { id: 'Facebook', icon: '📘' },
-                  { id: 'Instagram', icon: '📸' },
-                  { id: 'TikTok', icon: '🎵' },
-                  { id: 'YouTube', icon: '▶️' },
+                  { id: 'Facebook', icon: <Facebook size={14} /> },
+                  { id: 'Instagram', icon: <Instagram size={14} /> },
+                  { id: 'TikTok', icon: <Music size={14} /> },
+                  { id: 'YouTube', icon: <Youtube size={14} /> },
                 ].map(p => {
                   const act = platforms.includes(p.id);
                   return (
                     <button
+                      id={`platform-btn-${p.id}`}
                       key={p.id}
                       onClick={() => togglePlatform(p.id)}
                       className={`flex items-center gap-2 py-2 px-4 rounded-full text-sm font-bold transition-all border ${
                         act ? 'bg-ink border-ink text-amber' : 'bg-cream text-ink border-ink/10 hover:bg-ink/5'
                       }`}
                     >
-                      <span className={act ? 'opacity-100' : 'opacity-70'}>{p.icon}</span>
+                      <span className={act ? 'opacity-100 text-amber' : 'opacity-60 text-ink/70'}>{p.icon}</span>
                       <span>{p.id}</span>
                     </button>
                   );
