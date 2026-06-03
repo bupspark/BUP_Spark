@@ -33,12 +33,12 @@ export function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (o:
         transition-transform duration-300 ease-in-out flex flex-col
         ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
       `}>
-        <div className="flex items-center gap-3 p-6 font-display font-bold text-xl tracking-wide text-amber">
+        <div className="flex items-center gap-3 p-5 font-display font-bold text-xl tracking-wide text-amber">
           {!logoError ? (
             <img 
-              src="/logo.svg" 
+              src="/BUP_Spark_Logo_BGRemoved.png" 
               alt="Logo" 
-              className="h-8 w-8 object-contain"
+              className="h-16 w-16 object-contain"
               onError={() => setLogoError(true)}
             />
           ) : (

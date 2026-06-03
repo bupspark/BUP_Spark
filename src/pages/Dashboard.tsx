@@ -37,7 +37,7 @@ export default function Dashboard() {
     <div className="space-y-6">
       {!brand.name ? (
         <div className="flex-1 flex flex-col justify-center items-center py-24 text-center">
-          <img src="/logo.svg" alt="BUP Spark Logo" className="w-24 h-24 mb-6 opacity-90 object-contain drop-shadow-md" />
+          <img src="/BUP_Spark_Logo_BGRemoved.png" alt="BUP Spark Logo" className="w-48 h-48 mb-6 opacity-95 object-contain drop-shadow-lg transition-transform duration-300 hover:scale-105" />
           <h2 className="font-display font-bold text-3xl mb-4 text-ink">Welcome to BUP Spark</h2>
           <p className="text-muted mb-8 max-w-md text-lg">Your intelligence dashboard is empty. Build your Brand Twin to unlock insights, campaign simulations, and more.</p>
           <Link 

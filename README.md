@@ -2,7 +2,7 @@
 
 **BUP Spark** is a high-performance **Brand Intelligence Platform** designed to monitor, analyze, and simulate brand intelligence. It enables brand owners and marketers to build a **Brand Twin** (an AI-powered virtual replica of their brand's persona) to track market sentiment, analyze share of voice against competitors, and generate detailed executive brand analysis reports using Google's Gemini models.
 
-![BUP Spark Logo](public/logo.svg)
+![BUP Spark Logo](public/BUP_Spark_Logo_BGRemoved.png)
 
 ---
 

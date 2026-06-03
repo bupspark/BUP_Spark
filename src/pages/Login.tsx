@@ -43,16 +43,16 @@ export default function Login() {
           <div className="absolute bottom-0 left-0 -ml-16 -mb-16 w-32 h-32 bg-coral/20 rounded-full blur-2xl"></div>
           
           <div className="relative z-10 flex flex-col items-center">
-            <div className="w-20 h-20 bg-cream/5 rounded-2xl flex items-center justify-center backdrop-blur-sm mb-4 border border-white/10 overflow-hidden">
+            <div className="w-36 h-36 bg-cream/5 rounded-2xl flex items-center justify-center backdrop-blur-sm mb-4 border border-white/10 overflow-hidden transition-all duration-300 hover:border-white/20">
               {!logoError ? (
                 <img 
-                  src="/logo.svg" 
+                  src="/BUP_Spark_Logo_BGRemoved.png" 
                   alt="BUP Spark Logo" 
-                  className="w-full h-full object-contain p-2"
+                  className="w-full h-full object-contain p-1"
                   onError={() => setLogoError(true)}
                 />
               ) : (
-                <Sparkles className="w-10 h-10 text-amber" />
+                <Sparkles className="w-14 h-14 text-amber" />
               )}
             </div>
             <h1 className="font-display font-extrabold text-2xl text-cream tracking-tight">
