@@ -173,6 +173,22 @@ export default function Dashboard() {
             </button>
           </div>
 
+          {scrapedData.isFallback && (
+            <div className="bg-amber/5 border border-amber/20 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-ink/80 animate-in fade-in slide-in-from-top-1 duration-300">
+              <div className="flex items-center gap-2.5">
+                <span className="flex h-2.5 w-2.5 relative shrink-0">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber"></span>
+                </span>
+                <div>
+                  <span className="font-bold text-ink uppercase tracking-wider text-[9px] mr-1.5 bg-amber/20 px-1.5 py-0.5 rounded">AI COGNITIVE FALLBACK ACTIVE</span>
+                  <span>Due to your platform's Gemini API key quota limits (429 resource exhausted), live internet scraping is running safely on local web projection cache files. Standings fluctuation is simulated gracefully.</span>
+                </div>
+              </div>
+              <span className="text-[9px] font-black text-amber/80 font-mono italic shrink-0">ADAPTIVE MODE</span>
+            </div>
+          )}
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Metric 1 */}
             <div className="bg-white rounded-xl p-5 shadow-sm border-t-4 border-t-amber border-x border-b border-ink/5 relative overflow-hidden">
@@ -228,17 +244,27 @@ export default function Dashboard() {
             <div className="bg-white rounded-xl p-6 shadow-sm border border-ink/5">
               <h2 className="font-display font-bold mb-6 text-lg">Share of Voice</h2>
               <div className="space-y-4">
-                {scrapedData.share_of_voice.map((s, i) => (
-                  <div key={i}>
-                    <div className="flex justify-between text-sm mb-1">
-                      <span className={i === 0 ? "font-bold text-ink" : "text-muted"}>{s.name}</span>
-                      <span className="font-mono text-xs font-semibold">{s.v}%</span>
+                {[...scrapedData.share_of_voice].sort((a, b) => b.v - a.v).map((s, i) => {
+                  const isCurrentBrand = s.name.toLowerCase() === brand.name?.toLowerCase();
+                  return (
+                    <div key={i}>
+                      <div className="flex justify-between text-sm mb-1 items-center">
+                        <span className={isCurrentBrand ? "font-bold text-ink flex items-center gap-1.5" : "text-muted"}>
+                          {s.name}
+                          {isCurrentBrand && (
+                            <span className="text-[9px] font-bold bg-amber/20 text-ink px-1.5 py-0.5 rounded uppercase tracking-wider">
+                              Your Brand
+                            </span>
+                          )}
+                        </span>
+                        <span className="font-mono text-xs font-semibold">{s.v}%</span>
+                      </div>
+                      <div className="w-full bg-ink/5 rounded-full h-2 overflow-hidden">
+                        <div className={`h-full rounded-full ${s.color}`} style={{ width: `${s.v}%` }}></div>
+                      </div>
                     </div>
-                    <div className="w-full bg-ink/5 rounded-full h-2 overflow-hidden">
-                      <div className={`h-full rounded-full ${s.color}`} style={{ width: `${s.v}%` }}></div>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>

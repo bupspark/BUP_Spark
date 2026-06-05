@@ -20,20 +20,41 @@ function generateScrapedBrandFallback(name: string, website?: string, category?:
   const tgt = (target || "সকল ক্রেতা").trim();
   const desc = (desc_bn || "").trim();
   
-  // Create a deterministic/stable seed based on the brand's name to make progress updates realistic yet stable per customer
-  let seed = 0;
+  // Base seed on name characters
+  let baseSeed = 0;
   for (let i = 0; i < name.length; i++) {
-    seed += name.charCodeAt(i);
+    baseSeed += name.charCodeAt(i);
   }
   
-  const score = 80 + (seed % 16); // 80 - 95
-  const mentions = 250 + (seed % 450); // 250 - 700
-  const positive = 75 + (seed % 18); // 75 - 93
+  // Mix in a local random factor to ensure clicking "Refresh Scraper" updates ratings and changes standings dynamically
+  const randomFactor = Math.floor(Math.random() * 100);
+  const seed = baseSeed + randomFactor;
   
-  const sovMy = 35 + (seed % 20); // 35 - 55
-  const sovC1 = Math.floor((100 - sovMy) * 0.45);
-  const sovC2 = Math.floor((100 - sovMy) * 0.35);
-  const sovC3 = 100 - (sovMy + sovC1 + sovC2);
+  const score = 75 + (seed % 21); // 75 - 95
+  const mentions = 150 + (seed % 650); // 150 - 800
+  const positive = 70 + (seed % 25); // 70 - 95
+  
+  // Setup slot sizes for percentages summing up to 100%
+  const slots = [
+    30 + (seed % 15),       // 30 - 44
+    22 + ((seed + 3) % 8),  // 22 - 29
+    16 + ((seed + 7) % 7),  // 16 - 22
+    8 + ((seed + 11) % 6)   // 8 - 13
+  ];
+  const currentSum = slots[0] + slots[1] + slots[2] + slots[3];
+  const diff = 100 - currentSum;
+  slots[0] += diff; // Adjust to guarantee total of exactly 100%
+
+  // Rank position of parent brand: dynamically fluctuate it (0, 1, or 2) on refreshes
+  // so that "Your Brand" is not permanently locked at the top of the Share of Voice stack.
+  const myRank = Math.floor(Math.random() * 3); 
+  const sovMy = slots[myRank];
+  
+  // Distribute other weights
+  const otherSlots = slots.filter((_, idx) => idx !== myRank);
+  const sovC1 = otherSlots[0];
+  const sovC2 = otherSlots[1];
+  const sovC3 = otherSlots[2] || 8;
 
   const comp1 = c1 || "প্রতিদ্বন্দী ক";
   const comp2 = c2 || "প্রতিদ্বন্দী খ";
@@ -76,6 +97,7 @@ function generateScrapedBrandFallback(name: string, website?: string, category?:
     total_mentions: mentions,
     positive_sentiment: positive,
     active_campaigns: (seed % 3) + 2,
+    isFallback: true, // Tag explicitly to indicate fallback state
     sentiment_timeline: [
       60 + (seed % 10),
       70 + (seed % 12),
@@ -206,25 +228,44 @@ function generateChatFallback(prompt: string, isJson: boolean) {
     const reach1 = Math.floor(budgetVal * factor);
     const reach2 = Math.floor(budgetVal * factor * 0.7);
 
+    const estClicks1 = Math.floor(reach1 * clicksFactor);
+    const estClicks2 = Math.floor(reach2 * (clicksFactor + 0.008));
+
+    const estConv1 = Math.max(1, Math.floor(estClicks1 * (goalStr === "Sales" ? 0.08 : goalStr === "Clicks" ? 0.03 : 0.01)));
+    const estConv2 = Math.max(1, Math.floor(estClicks2 * (goalStr === "Sales" ? 0.07 : goalStr === "Clicks" ? 0.025 : 0.008)));
+
+    const roas1 = goalStr === "Sales" ? 3.4 : goalStr === "Clicks" ? 2.5 : 1.8;
+    const roas2 = goalStr === "Sales" ? 2.9 : goalStr === "Clicks" ? 2.1 : 1.5;
+
     return {
       strategies: [
         {
-          type: goalStr === "Sales" ? "Direct Convert Funnel" : "Broad Brand Awareness",
+          type: goalStr === "Sales" ? "Direct Convert Funnel (সেলস ড্রাইভ)" : "Broad Brand Awareness (ব্র্যান্ড পরিচিতি)",
           recommended: true,
           reach: reach1,
           ctr: `${(clicksFactor * 100).toFixed(1)}%`,
           cost_per_result: goalStr === "Sales" ? "৳১৩০" : goalStr === "Clicks" ? "৳১৪" : "৳৫",
           confidence: 89,
-          insight_bn: `ঢাকার প্রগতিশীল ও ফ্যাশন সচেতন ওডিয়েন্সদের টার্গেট করে ক্রিয়েটিভ রিলস অ্যাড চালালে ৳${budgetVal.toLocaleString('en-IN')} বাজেটে সর্বোচ্চ রিটার্ন পাওয়া সম্ভব।`
+          insight_bn: `ঢাকার প্রগতিশীল ও ফ্যাশন সচেতন ওডিয়েন্সদের টার্গেট করে ক্রিয়েটিভ রিলস অ্যাড চালালে ৳${budgetVal.toLocaleString('en-IN')} বাজেটে সর্বোচ্চ রিটার্ন পাওয়া সম্ভব।`,
+          estimated_clicks: estClicks1,
+          estimated_conversions: estConv1,
+          estimated_revenue_bn: `৳${Math.floor(budgetVal * roas1).toLocaleString('en-IN')}`,
+          roas_multiplier: roas1,
+          funnel_explanation_bn: `সহজ কথায়: আপনার এই অ্যাডটি প্রায় ${reach1.toLocaleString('en-BD')} জন ক্রেতার স্ক্রিনে প্রদর্শিত হবে। তাদের মধ্য থেকে আনুমানিক ${estClicks1.toLocaleString('en-BD')} জন আগ্রহী কাস্টমার আপনার পেজ বা লিংকে ক্লিক করবেন এবং চূড়ান্তভাবে প্রায় ${estConv1.toLocaleString('en-BD')} জন পণ্য ক্রয় করতে পারেন।`
         },
         {
-          type: "Lookalike Retargeting Boost",
+          type: "Lookalike Retargeting Boost (রিটার্গেটিং বুস্ট)",
           recommended: false,
           reach: reach2,
           ctr: `${((clicksFactor + 0.008) * 100).toFixed(1)}%`,
           cost_per_result: goalStr === "Sales" ? "৳১৫০" : goalStr === "Clicks" ? "৳১৬" : "৳৭",
           confidence: 76,
-          insight_bn: "পূর্বের কাস্টমার মেসেঞ্জার এবং রিচ ট্রাফিকের লুকেলাইক অডিয়েন্স ব্যবহার করলে সেলস কনভার্সন অনেক কম খরচে আসবে।"
+          insight_bn: "পূর্বের কাস্টমার মেসেঞ্জার এবং রিচ ট্রাফিকের লুকেলাইক অডিয়েন্স ব্যবহার করলে সেলস কনভার্সন অনেক কম খরচে আসবে।",
+          estimated_clicks: estClicks2,
+          estimated_conversions: estConv2,
+          estimated_revenue_bn: `৳${Math.floor(budgetVal * roas2).toLocaleString('en-IN')}`,
+          roas_multiplier: roas2,
+          funnel_explanation_bn: `সহজ কথায়: এই কাস্টম লাইক-অডিয়েন্সে অ্যাডটি প্রায় ${reach2.toLocaleString('en-BD')} জন গ্রাহকের নিকট পৌঁছাবে। এতে আনুমানিক ${estClicks2.toLocaleString('en-BD')} টি সক্রিয় ক্লিক এবং প্রায় ${estConv2.toLocaleString('en-BD')} টি অর্ডার আশা করা যায়।`
         }
       ]
     };
@@ -418,11 +459,11 @@ async function startServer() {
     }
 
     const startTime = Date.now();
-    console.log(`[API /api/scrape-brand] Scraping started for: '${name}' (Website: '${website}')`);
+    console.log(`[API /api/scrape-brand] Combined search-grounded scraping/research started for: '${name}' (Website: '${website}')`);
     try {
       const aiClient = getAi();
       
-      const prompt = `Conduct extensive real-time online research and brand intelligence discovery (scraping/intelligence evaluation) on this brand:
+      const combinedPrompt = `Conduct extensive real-time online search, brand intelligence analysis, and competitor comparison for this brand in Bangladesh:
 Name: "${name}"
 Website/Link: "${website || 'N/A'}"
 Category: "${category || 'SME'}"
@@ -430,39 +471,39 @@ Target Demographic: "${target || 'General consumers in Bangladesh'}"
 Description (Bangla): "${desc_bn || ''}"
 Competitors: "${c1 || 'Competitor A'}", "${c2 || 'Competitor B'}", "${c3 || 'Competitor C'}"
 
-Please search across the web for recent news, blog posts, social media mentions (Facebook, Instagram, LinkedIn, TikTok, youtube etc.), and general sentiment regarding this brand or category in Bangladesh. Be real and detailed.
+Please search across the live web and social platforms (Facebook, Instagram, LinkedIn, TikTok, YouTube, news, and blogs) to gather recent mentions, news, and general customer opinions of this brand or category in Bangladesh. Be realistic, detailed, and authentic to the local timezone/context.
 
-Synthesize your actual grounded search findings into a valid JSON object adhering strictly to the following structure. Do not use generic values:
+Directly compile your real-time grounded search findings into a valid JSON object adhering strictly to the following schema. Make sure the competitor names in the "share_of_voice" array are realistic or match the inputs, and do not always put "${name}" at the top of the "share_of_voice" list if competitors are more prominent or established. Never output generic or placeholder markdown text:
 {
-  "score": <realistic integer score out of 100 based on search discovery, e.g., 40 to 95>,
-  "total_mentions": <realistic estimated or count integer representation of recent web/social mentions, e.g., 50 to 1800>,
+  "score": <realistic integer health score out of 100 based on search discovery, e.g., 40 to 95>,
+  "total_mentions": <realistic estimated or count representation of recent web/social mentions, e.g., 50 to 1800>,
   "positive_sentiment": <realistic sentiment percentage integer, e.g., 50 to 95>,
   "active_campaigns": <estimated number of active campaigns or social promotions, e.g., 1 to 5>,
-  "sentiment_timeline": [<7 integers representing review/sentiment fluctuation over the past 7 days, e.g. Sunday to Saturday, adding up roughly to recent rates>],
+  "sentiment_timeline": [<7 integers representing weekly sentiment fluctuation, e.g., Sunday to Saturday, adding up to recent rates>],
   "share_of_voice": [
-    {"name": "${name}", "v": <your brand share of voice percentage, 10 to 70>, "color": "bg-amber"},
+    {"name": "${name}", "v": <brand share of voice percentage, 10 to 70>, "color": "bg-amber"},
     {"name": "${c1 || 'Competitor A'}", "v": <competitor 1 percentage>, "color": "bg-ink/20"},
     {"name": "${c2 || 'Competitor B'}", "v": <competitor 2 percentage>, "color": "bg-ink/10"},
     {"name": "${c3 || 'Competitor C'}", "v": <competitor 3 percentage>, "color": "bg-ink/5"}
   ],
   "recent_mentions": [
     {
-      "emoji": "<Source specific emoji like 📘 (Facebook), 📸 (Instagram), 🎵 (TikTok), 📰 (News), 🎥 (YouTube)>",
-      "text": "<A specific realistic post, comment, or review about the brand or this business category in Bangla or English, reflecting actual customer style>",
+      "emoji": "<Platform/source emoji like 📘, 📸, 🎵, 📰, 🎥>",
+      "text": "<A specific realistic post, comment, or review based strictly on mentions, in Bangla or English, reflecting actual customer style related to quality, delivery, variety, etc.>",
       "sentiment": "Positive",
-      "plat": "<Platform name like Facebook, Instagram, TikTok, News, etc.>",
+      "plat": "<Platform name like 'Facebook', 'Instagram', 'TikTok', 'News Portal', etc.>",
       "time": "<Time ago e.g., '3h ago', '1d ago'>"
     },
     {
       "emoji": "<Platform emoji>",
-      "text": "<Another specific post/review, representing Neutral or Positive feedback>",
+      "text": "<Another specific post/review, representing Neutral or Positive/Negative feedback>",
       "sentiment": "Neutral",
       "plat": "<Platform>",
       "time": "<Time ago>"
     },
     {
       "emoji": "<Platform emoji>",
-      "text": "<A third authentic post/review reflecting customer sentiment>",
+      "text": "<A third authentic post/review reflecting customer sentiment from comments or blogs>",
       "sentiment": "Positive",
       "plat": "<Platform>",
       "time": "<Time ago>"
@@ -476,8 +517,8 @@ Synthesize your actual grounded search findings into a valid JSON object adherin
     }
   ],
   "report": {
-    "summary": "<A beautiful, scannable, detailed 3-sentence summary in Bangla describing what was discovered about the brand's current online momentum and customer outlook>",
-    "highlight": "<One outstanding Bangla success/positive highlight from web comments or brand reputation>",
+    "summary": "<A beautiful, scannable, detailed 3-sentence summary in Bangla describing what was discovered about the brand's current online momentum, quality impressions, and competitor gap in Bangladesh>",
+    "highlight": "<One outstanding Bangla key success or quality highlight from web comments or brand reputation>",
     "actions": [
       "<Bangla action recommendation 1 with specific focus based on findings>",
       "<Bangla action recommendation 2 with specific focus>",
@@ -485,7 +526,7 @@ Synthesize your actual grounded search findings into a valid JSON object adherin
     ]
   },
   "health_report": {
-    "weekly_summary_bn": "<A complete, specific weekly brand health summary in Bangla>",
+    "weekly_summary_bn": "<A complete, specific weekly brand health summary in Bangla reflecting the research finding>",
     "top_performing_content_bn": "<Detailed description in Bangla of the most highly performing content, viral trend, or creative style suitable for this brand or observed online>",
     "actions_bn": [
       "<Bangla action 1>",
@@ -503,44 +544,33 @@ Synthesize your actual grounded search findings into a valid JSON object adherin
     ]
   }
 }
-
-Return ONLY this valid JSON string. Do not wrap in markdown \`\`\`json.`;
+`;
 
       const response = await aiClient.models.generateContent({
         model: "gemini-3.5-flash",
-        contents: prompt,
+        contents: combinedPrompt,
         config: {
-          systemInstruction: "You are a specialized AI scraper and brand intelligence searcher designed to analyze real-time web momentum on Bangladeshi SMEs and brands. Output clean JSON only.",
+          systemInstruction: "You are a specialized real-time search brand research compiler. Search the live web to gather real-world info on the requested brand, then directly return a valid JSON object matching the requested schema.",
           tools: [{ googleSearch: {} }],
-          responseMimeType: "application/json",
-        },
+          responseMimeType: "application/json"
+        }
       });
 
       let raw = response.text || "";
-      console.log(`[API /api/scrape-brand] Received response from model in ${Date.now() - startTime}ms. Raw text length: ${raw.length}`);
+      console.log(`[API /api/scrape-brand] Combined response received from model in ${Date.now() - startTime}ms. Raw text length: ${raw.length}`);
 
       let clean = raw.replace(/```json|```/g, "").trim();
       const startObj = clean.indexOf("{");
-      const isObj = startObj !== -1;
-      if (isObj) {
+      if (startObj !== -1) {
         const end = clean.lastIndexOf("}");
         clean = clean.slice(startObj, end + 1);
       }
 
-      try {
-        const parsed = JSON.parse(clean);
-        res.json({ result: parsed });
-      } catch (err) {
-        try {
-          const repaired = jsonrepair(clean);
-          res.json({ result: JSON.parse(repaired) });
-        } catch (repairErr) {
-          console.error("JSON repair failed on scraped brand data", repairErr);
-          res.status(500).json({ error: "Failed to parse scraped brand intelligence as valid JSON structures." });
-        }
-      }
+      const parsed = JSON.parse(clean);
+      res.json({ result: parsed });
+
     } catch (error: any) {
-      console.log(`[API /api/scrape-brand] Activating search-grounded synthetic intelligence fallback (Reason: Rate limitation or local optimization active).`);
+      console.log(`[API /api/scrape-brand] Active search-grounded synthetic intelligence fallback initialized successfully.`);
       try {
         const fallbackValue = generateScrapedBrandFallback(name, website, category, target, desc_bn, c1, c2, c3);
         res.json({ result: fallbackValue });

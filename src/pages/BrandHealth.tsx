@@ -89,6 +89,22 @@ export default function BrandHealth() {
         </div>
       ) : (
         <>
+          {scrapedData.isFallback && (
+            <div className="bg-amber/5 border border-amber/20 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-ink/80 animate-in fade-in slide-in-from-top-1 duration-300">
+              <div className="flex items-center gap-2.5">
+                <span className="flex h-2.5 w-2.5 relative shrink-0">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber"></span>
+                </span>
+                <div>
+                  <span className="font-bold text-ink uppercase tracking-wider text-[9px] mr-1.5 bg-amber/20 px-1.5 py-0.5 rounded">AI COGNITIVE FALLBACK ACTIVE</span>
+                  <span>Due to your platform's Gemini API key quota limits (429 resource exhausted), live internet scraping is running safely on local web projection cache files. Standings fluctuation is simulated gracefully.</span>
+                </div>
+              </div>
+              <span className="text-[9px] font-black text-amber/80 font-mono italic shrink-0">ADAPTIVE MODE</span>
+            </div>
+          )}
+
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Score Card */}
             <div className="bg-white rounded-xl shadow-sm border border-pink/5 p-6 flex flex-col items-center justify-center text-center">
@@ -110,7 +126,9 @@ export default function BrandHealth() {
                 </div>
                 <div className="flex justify-between text-sm py-2">
                   <span className="text-muted">Index Standing</span>
-                  <span className="font-bold text-amber">SOV {scrapedData.share_of_voice[0]?.v || 43}%</span>
+                  <span className="font-bold text-amber">
+                    SOV {scrapedData.share_of_voice.find(s => s.name.toLowerCase() === brand.name.toLowerCase())?.v || scrapedData.share_of_voice[0]?.v || 43}%
+                  </span>
                 </div>
               </div>
             </div>

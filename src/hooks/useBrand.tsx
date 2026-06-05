@@ -33,6 +33,7 @@ export interface ScrapedBrandData {
     opportunities_bn: string[];
     risks_bn: string[];
   };
+  isFallback?: boolean;
 }
 
 const defaultBrand: BrandProfile = {
