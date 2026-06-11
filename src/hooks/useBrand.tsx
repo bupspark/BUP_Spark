@@ -34,6 +34,8 @@ export interface ScrapedBrandData {
     risks_bn: string[];
   };
   isFallback?: boolean;
+  sales_timeline: { name: string; sales: number; target: number }[];
+  roi_timeline: { name: string; roi: number; previousRoi: number }[];
 }
 
 const defaultBrand: BrandProfile = {

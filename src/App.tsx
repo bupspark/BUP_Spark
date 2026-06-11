@@ -10,8 +10,6 @@ import Dashboard from './pages/Dashboard';
 import BrandTwin from './pages/BrandTwin';
 import CampaignSimulator from './pages/CampaignSimulator';
 import ContentEngine from './pages/ContentEngine';
-import CreatorMatch from './pages/CreatorMatch';
-import BrandHealth from './pages/BrandHealth';
 import Docs from './pages/Docs';
 import Login from './pages/Login';
 import { AuthProvider, useAuth } from './hooks/useAuth';
@@ -35,8 +33,6 @@ function AppRoutes() {
         <Route path="/brand-twin" element={<BrandTwin />} />
         <Route path="/simulator" element={<CampaignSimulator />} />
         <Route path="/content" element={<ContentEngine />} />
-        <Route path="/creators" element={<CreatorMatch />} />
-        <Route path="/health" element={<BrandHealth />} />
         <Route path="/docs" element={<Docs />} />
       </Route>
     </Routes>

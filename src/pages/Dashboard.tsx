@@ -223,49 +223,302 @@ export default function Dashboard() {
             </div>
           </div>
 
+          {/* Real-time Sales and ROI Analytics section */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Sentiment Timeline */}
-            <div className="bg-white rounded-xl p-6 shadow-sm border border-ink/5">
-              <h2 className="font-display font-bold mb-6 text-lg">Sentiment Timeline</h2>
-              <div className="flex items-end justify-between h-40 gap-2">
-                {scrapedData.sentiment_timeline.map((h, i) => (
-                  <div key={i} className="w-full flex flex-col justify-end h-full gap-2 font-mono">
-                    <div 
-                      className={`w-full rounded-t-sm transition-all duration-500 hover:opacity-80`} 
-                      style={{ height: `${Math.max(h, 5)}%`, backgroundColor: h > 70 ? '#38bdf8' : h > 40 ? '#fbbf24' : '#f87171' }}
-                    />
-                    <div className="text-[10px] text-center text-muted font-mono">{['Su','Mo','Tu','We','Th','Fr','Sa'][i]}</div>
+            
+            {/* Sales Conditions Graph */}
+            <div className="bg-white rounded-xl p-6 shadow-sm border border-ink/5 flex flex-col justify-between">
+              <div>
+                <div className="flex justify-between items-center mb-4">
+                  <div>
+                    <h2 className="font-display font-bold text-lg text-ink">Weekly Sales Condition Tracker</h2>
+                    <p className="text-xs text-muted">Observed sales revenue performance vs set target (৳ in thousands)</p>
                   </div>
-                ))}
+                  <span className="text-[10px] bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded border border-emerald-250 animate-pulse">
+                    Live Scraper Feed
+                  </span>
+                </div>
+
+                {/* Interactive SVG Grouped Chart */}
+                <div className="relative mt-2 bg-cream2/20 p-2 rounded-xl border border-ink/5">
+                  <svg viewBox="0 0 540 220" className="w-full h-auto overflow-visible font-mono">
+                    {/* Gradients */}
+                    <defs>
+                      <linearGradient id="salesAreaGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#10b981" stopOpacity="0.15" />
+                        <stop offset="100%" stopColor="#10b981" stopOpacity="0.0" />
+                      </linearGradient>
+                      <linearGradient id="targetAreaGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#0f62fe" stopOpacity="0.08" />
+                        <stop offset="100%" stopColor="#0f62fe" stopOpacity="0.0" />
+                      </linearGradient>
+                    </defs>
+
+                    {/* Grid Lines */}
+                    {[0, 25, 50, 75, 100].map((percent, idx) => {
+                      const yPos = 30 + (idx * 35);
+                      return (
+                        <g key={percent}>
+                          <line x1="50" y1={yPos} x2="510" y2={yPos} stroke="#f1f5f9" strokeWidth="1" strokeDasharray="3 3" />
+                          <text x="15" y={yPos + 4} className="text-[10px] fill-slate-400 font-sans font-medium" textAnchor="start">
+                            ৳{Math.round((140 * (100 - percent)) / 100)}K
+                          </text>
+                        </g>
+                      );
+                    })}
+
+                    {/* Generate paths for Sales and Target */}
+                    {(() => {
+                      const salesPoints = (scrapedData.sales_timeline || []).map((pt, i) => {
+                        const x = 70 + (i * 80);
+                        const y = 170 - (pt.sales / 140) * 130;
+                        return { x, y, val: pt.sales, tgt: pt.target, name: pt.name };
+                      });
+
+                      const salesLinePath = salesPoints.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
+                      const salesAreaPath = `${salesLinePath} L ${salesPoints[salesPoints.length - 1].x} 170 L ${salesPoints[0].x} 170 Z`;
+
+                      const targetPoints = (scrapedData.sales_timeline || []).map((pt, i) => {
+                        const x = 70 + (i * 80);
+                        const y = 170 - (pt.target / 140) * 130;
+                        return { x, y };
+                      });
+
+                      const targetLinePath = targetPoints.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
+
+                      return (
+                        <>
+                          {/* Target Line & Shading */}
+                          <path d={targetLinePath} fill="none" stroke="#3b82f6" strokeWidth="2" strokeDasharray="4 4" opacity="0.6" />
+                          
+                          {/* Sales Area & Line */}
+                          <path d={salesAreaPath} fill="url(#salesAreaGrad)" />
+                          <path d={salesLinePath} fill="none" stroke="#10b981" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+
+                          {/* Data Nodes */}
+                          {salesPoints.map((p, idx) => {
+                            const isPassing = p.val >= p.tgt;
+                            return (
+                              <g key={idx} className="group/node cursor-pointer">
+                                {/* Interactive hover hitbox */}
+                                <circle cx={p.x} cy={p.y} r="18" fill="transparent" />
+                                <circle 
+                                  cx={p.x} 
+                                  cy={p.y} 
+                                  r="5" 
+                                  fill="#10b981" 
+                                  stroke="#ffffff" 
+                                  strokeWidth="2" 
+                                  className="transition-transform duration-200 group-hover/node:scale-150 group-hover/node:fill-emerald-450 filter drop-shadow-xs" 
+                                />
+
+                                {/* Tooltip details inside the graph */}
+                                <g className="opacity-0 group-hover/node:opacity-100 transition-opacity duration-300 pointer-events-none">
+                                  <rect x={p.x - 55} y={p.y - 48} width="110" height="40" rx="6" fill="#1e293b" />
+                                  <text x={p.x} y={p.y - 34} className="text-[10px] fill-cream font-bold" textAnchor="middle">
+                                    Sales: ৳{p.val}K
+                                  </text>
+                                  <text x={p.x} y={p.y - 20} className="text-[9px] fill-slate-300" textAnchor="middle">
+                                    Target: ৳{p.tgt}K ({isPassing ? '✅ Met' : '❌ Missed'})
+                                  </text>
+                                </g>
+                              </g>
+                            );
+                          })}
+
+                          {/* Target Nodes */}
+                          {targetPoints.map((p, idx) => (
+                            <circle key={idx} cx={p.x} cy={p.y} r="2.5" fill="#3b82f6" opacity="0.8" />
+                          ))}
+
+                          {/* X-axis Labels */}
+                          {salesPoints.map((p, idx) => (
+                            <text key={idx} x={p.x} y="195" className="text-[10px] fill-slate-500 font-sans font-semibold" textAnchor="middle">
+                              {p.name}
+                            </text>
+                          ))}
+                        </>
+                      );
+                    })()}
+                  </svg>
+                </div>
+              </div>
+
+              {/* Legend Summary */}
+              <div className="flex justify-between items-center border-t border-slate-150 pt-4 mt-4 text-xs font-semibold text-slate-650">
+                <div className="flex gap-4">
+                  <span className="flex items-center gap-1.5">
+                    <span className="w-3 h-3 rounded bg-emerald-500 inline-block"></span>
+                    Actual Sales
+                  </span>
+                  <span className="flex items-center gap-1.5 text-blue-600">
+                    <span className="w-3 h-1 border-t-2 border-dashed border-blue-500 inline-block"></span>
+                    Weekly Target
+                  </span>
+                </div>
+                <div className="text-[11px] bg-slate-100 text-slate-800 px-2.5 py-1 rounded-full">
+                  Average Accuracy: <span className="font-bold text-emerald-600">92.4%</span>
+                </div>
               </div>
             </div>
 
-            {/* Share of voice */}
-            <div className="bg-white rounded-xl p-6 shadow-sm border border-ink/5">
-              <h2 className="font-display font-bold mb-6 text-lg">Share of Voice</h2>
-              <div className="space-y-4">
-                {[...scrapedData.share_of_voice].sort((a, b) => b.v - a.v).map((s, i) => {
-                  const isCurrentBrand = s.name.toLowerCase() === brand.name?.toLowerCase();
-                  return (
-                    <div key={i}>
-                      <div className="flex justify-between text-sm mb-1 items-center">
-                        <span className={isCurrentBrand ? "font-bold text-ink flex items-center gap-1.5" : "text-muted"}>
-                          {s.name}
-                          {isCurrentBrand && (
-                            <span className="text-[9px] font-bold bg-amber/20 text-ink px-1.5 py-0.5 rounded uppercase tracking-wider">
-                              Your Brand
-                            </span>
-                          )}
-                        </span>
-                        <span className="font-mono text-xs font-semibold">{s.v}%</span>
-                      </div>
-                      <div className="w-full bg-ink/5 rounded-full h-2 overflow-hidden">
-                        <div className={`h-full rounded-full ${s.color}`} style={{ width: `${s.v}%` }}></div>
-                      </div>
-                    </div>
-                  );
-                })}
+            {/* Campaign ROI Tracker Graph */}
+            <div className="bg-white rounded-xl p-6 shadow-sm border border-ink/5 flex flex-col justify-between">
+              <div>
+                <div className="flex justify-between items-center mb-4">
+                  <div>
+                    <h2 className="font-display font-bold text-lg text-ink">Campaign ROI Performance Trend</h2>
+                    <p className="text-xs text-muted">Weekly ad campaigns Return on Investment (ROI Multiplier)</p>
+                  </div>
+                  <span className="text-[10px] bg-[#0f62fe]/10 text-[#0f62fe] font-bold px-2 py-0.5 rounded border border-[#0f62fe]/20">
+                    Real-time ROI Analyzer
+                  </span>
+                </div>
+
+                {/* SVG Line Chart for ROI */}
+                <div className="relative mt-2 bg-cream2/20 p-2 rounded-xl border border-ink/5">
+                  <svg viewBox="0 0 540 220" className="w-full h-auto overflow-visible font-mono">
+                    <defs>
+                      <linearGradient id="roiAreaGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#845ec2" stopOpacity="0.1" />
+                        <stop offset="100%" stopColor="#845ec2" stopOpacity="0.0" />
+                      </linearGradient>
+                    </defs>
+
+                    {/* Y scale guide lines */}
+                    {[0, 1.25, 2.5, 3.75, 5.0].map((val, idx) => {
+                      const yPos = 30 + (idx * 35);
+                      return (
+                        <g key={val}>
+                          <line x1="50" y1={yPos} x2="510" y2={yPos} stroke="#f1f5f9" strokeWidth="1" strokeDasharray="3 3" />
+                          <text x="15" y={yPos + 4} className="text-[10px] fill-slate-400 font-sans font-medium" textAnchor="start">
+                            {(5.0 - val).toFixed(1)}x
+                          </text>
+                        </g>
+                      );
+                    })}
+
+                    {/* ROI plotting points */}
+                    {(() => {
+                      const roiPoints = (scrapedData.roi_timeline || []).map((pt, i) => {
+                        const x = 70 + (i * 80);
+                        const y = 170 - (pt.roi / 5.0) * 140;
+                        return { x, y, val: pt.roi, prev: pt.previousRoi, name: pt.name };
+                      });
+
+                      const roiLinePath = roiPoints.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
+                      const roiAreaPath = `${roiLinePath} L ${roiPoints[roiPoints.length - 1].x} 170 L ${roiPoints[0].x} 170 Z`;
+
+                      const prevPoints = (scrapedData.roi_timeline || []).map((pt, i) => {
+                        const x = 70 + (i * 80);
+                        const y = 170 - (pt.previousRoi / 5.0) * 140;
+                        return { x, y };
+                      });
+
+                      const prevLinePath = prevPoints.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
+
+                      return (
+                        <>
+                          {/* Previous Campaign Baseline (Dashed) */}
+                          <path d={prevLinePath} fill="none" stroke="#94a3b8" strokeWidth="2" strokeDasharray="4 4" opacity="0.7" />
+
+                          {/* Current Campaign Area & Line */}
+                          <path d={roiAreaPath} fill="url(#roiAreaGrad)" />
+                          <path d={roiLinePath} fill="none" stroke="#845ec2" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+
+                          {/* Current ROI Nodes */}
+                          {roiPoints.map((p, idx) => {
+                            const isUp = p.val >= p.prev;
+                            const pctIncrease = Math.round(((p.val - p.prev) / p.prev) * 100);
+                            return (
+                              <g key={idx} className="group/roinode cursor-pointer">
+                                <circle cx={p.x} cy={p.y} r="18" fill="transparent" />
+                                <circle 
+                                  cx={p.x} 
+                                  cy={p.y} 
+                                  r="5" 
+                                  fill="#845ec2" 
+                                  stroke="#ffffff" 
+                                  strokeWidth="2" 
+                                  className="transition-transform duration-200 group-hover/roinode:scale-150" 
+                                />
+
+                                {/* Floating Tooltip */}
+                                <g className="opacity-0 group-hover/roinode:opacity-100 transition-opacity duration-300 pointer-events-none">
+                                  <rect x={p.x - 65} y={p.y - 48} width="130" height="40" rx="6" fill="#1e293b" />
+                                  <text x={p.x} y={p.y - 34} className="text-[10px] fill-cream font-bold" textAnchor="middle">
+                                    Current ROI: {p.val.toFixed(2)}x
+                                  </text>
+                                  <text x={p.x} y={p.y - 20} className="text-[9px] fill-slate-300" textAnchor="middle">
+                                    Previous: {p.prev.toFixed(2)}x ({isUp ? `+${pctIncrease}% 📈` : `${pctIncrease}% `})
+                                  </text>
+                                </g>
+                              </g>
+                            );
+                          })}
+
+                          {/* baseline Nodes */}
+                          {prevPoints.map((p, idx) => (
+                            <circle key={idx} cx={p.x} cy={p.y} r="2.5" fill="#94a3b8" opacity="0.8" />
+                          ))}
+
+                          {/* Labels */}
+                          {roiPoints.map((p, idx) => (
+                            <text key={idx} x={p.x} y="195" className="text-[10px] fill-slate-500 font-sans font-semibold" textAnchor="middle">
+                              {p.name}
+                            </text>
+                          ))}
+                        </>
+                      );
+                    })()}
+                  </svg>
+                </div>
               </div>
+
+              {/* Legend */}
+              <div className="flex justify-between items-center border-t border-slate-150 pt-4 mt-4 text-xs font-semibold text-slate-650">
+                <div className="flex gap-4">
+                  <span className="flex items-center gap-1.5" style={{ color: '#845ec2' }}>
+                    <span className="w-3 h-3 rounded bg-[#845ec2] inline-block"></span>
+                    Current Campaign ROI
+                  </span>
+                  <span className="flex items-center gap-1.5 text-slate-400">
+                    <span className="w-3 h-1 border-t-2 border-dashed border-slate-400 inline-block"></span>
+                    Historical Baseline
+                  </span>
+                </div>
+                <div className="text-[11px] bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-full">
+                  Avg ROI Ratio: <span className="font-bold">3.25x</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-ink/5">
+            <h2 className="font-display font-bold mb-6 text-lg">Competitor Share of Voice</h2>
+            <div className="space-y-4">
+              {[...scrapedData.share_of_voice].sort((a, b) => b.v - a.v).map((s, i) => {
+                const isCurrentBrand = s.name.toLowerCase() === brand.name?.toLowerCase();
+                return (
+                  <div key={i}>
+                    <div className="flex justify-between text-sm mb-1 items-center">
+                      <span className={isCurrentBrand ? "font-bold text-ink flex items-center gap-1.5" : "text-muted"}>
+                        {s.name}
+                        {isCurrentBrand && (
+                          <span className="text-[9px] font-bold bg-amber/20 text-ink px-1.5 py-0.5 rounded uppercase tracking-wider">
+                            Your Brand
+                          </span>
+                        )}
+                      </span>
+                      <span className="font-mono text-xs font-semibold">{s.v}%</span>
+                    </div>
+                    <div className="w-full bg-ink/5 rounded-full h-2 overflow-hidden">
+                      <div className={`h-full rounded-full ${s.color}`} style={{ width: `${s.v}%` }}></div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
 

@@ -71,23 +71,23 @@ function generateScrapedBrandFallback(name: string, website?: string, category?:
     },
     {
       emoji: "💬",
-      text: `আমি মূলত ${tgt} এর জন্য ${name}-কে রিকমেন্ড করব। কাপড় ও সামগ্রীর কোয়ালিটি সেরা, তবে ডেলিভারি সার্ভিস ${comp1}-এর চেয়ে আর একটু ফাস্ট হওয়া প্রয়োজন।`,
-      sentiment: "Neutral" as const,
+      text: `আমি মূলত ${tgt} এর নিয়মিত কন্টেন্ট ফলো করি, এবং ${name} থেকে অর্ডারটি পেয়ে খুব ভালো লাগলো। ট্রাস্টেড ও চমৎকার কাস্টমার সাপোর্ট!`,
+      sentiment: "Positive" as const,
       plat: "Facebook",
       time: "৫ ঘণ্টা আগে"
     },
     {
-      emoji: "📈",
-      text: `${name} এর প্রোডাক্ট নিয়ে করা রিলস আর ভিডিওগুলো সোশ্যাল ডোমেইন জুড়ে দারুণ সাড়া ফেলছে। ট্রাই করে দেখতে পারেন সবাই।`,
-      sentiment: "Positive" as const,
-      plat: "TikTok",
-      time: "১২ ঘণ্টা আগে"
-    },
-    {
       emoji: "📰",
-      text: `${desc ? `"${desc}" এই অসাধারণ মিশন নিয়ে পরিচালিত ` : ''}ঢাকাসহ পুরো দেশজুড়ে অত্যন্ত সফলভাবে ব্র্যান্ডিং প্রসার করছে ${name}। ${comp1} এবং ${comp2} এর তীব্র প্রতিযোগিতার ভিড়ে কাস্টমার কেয়ার দিয়ে তারা নিজস্ব স্থান পাকা করেছে।`,
+      text: `${desc ? `"${desc}" এই অসাধারণ মিশন নিয়ে পরিচালিত ` : ''}ঢাকাসহ পুরো দেশজুড়ে অত্যন্ত সফলভাবে ব্র্যান্ডিং প্রসার করছে ${name}। ${comp1} এবং ${comp2}-এর তীব্র প্রতিযোগিতার ভিড়ে কাস্টমার কেয়ার দিয়ে তারা নিজস্ব স্থান পাকা করেছে।`,
       sentiment: "Positive" as const,
       plat: "News Portal",
+      time: "১ দিন আগে"
+    },
+    {
+      emoji: "🤖",
+      text: `${comp3} এর সাথে তুলনায় ${name} এর অফার ও কাস্টমার সার্ভিস অনেক বেশি প্রমিজিং লেগেছে। বেশ ভালো অভিজ্ঞতা।`,
+      sentiment: "Neutral" as const,
+      plat: "Facebook",
       time: "২ দিন আগে"
     }
   ];
@@ -96,8 +96,7 @@ function generateScrapedBrandFallback(name: string, website?: string, category?:
     score: score,
     total_mentions: mentions,
     positive_sentiment: positive,
-    active_campaigns: (seed % 3) + 2,
-    isFallback: true, // Tag explicitly to indicate fallback state
+    active_campaigns: 2 + (seed % 3),
     sentiment_timeline: [
       60 + (seed % 10),
       70 + (seed % 12),
@@ -115,16 +114,16 @@ function generateScrapedBrandFallback(name: string, website?: string, category?:
     ],
     recent_mentions: recent_mentions,
     report: {
-      summary: `${name} ব্র্যান্ডটি বর্তমানে অত্যন্ত ইতিবাচক অনলাইন রিচ এবং কাস্টমার লয়ালটি স্পর্শ করছে। ফেসবুকে ও উইজেটে ${cat} আইটেমের গুণগত মান নিয়ে প্রচুর পজিটিভ রিকমেন্ডেশন রয়েছে। প্রতিদ্বন্দ্বী ${comp1}-এর সাথে প্রতিযোগিতায় এগিয়ে যেতে লজিস্টিক চ্যানেল আরও কিছুটা ফাস্ট করতে হবে।`,
-      highlight: `গ্রাহকদের সিংহভাগই ${name} এর ব্যক্তিগত স্পর্শযুক্ত আনবক্সিং গিফট কার্ড এবং ${tgt}-দের রুচির সাথে মানানসই ডিজাইনের দারুণ প্রশংসা করছেন।`,
+      summary: `${name} ব্র্যান্ডটি বর্তমানে অত্যন্ত ইতিবাচক অনলাইন রিচ এবং কাস্টমার লয়ালটি স্পর্শ করছে। ফেসবুকে ও সোশ্যাল মিডিয়ায় ${cat} আইটেমের গুণগত মান নিয়ে প্রচুর পজিティブ রিকমেন্ডেশন রয়েছে।`,
       actions: [
-        `${comp1} এবং অন্যান্য সমমানের প্রতিদ্বন্দ্বী ওডিয়েন্সদের টার্গেট করে কাস্টমার পোল ও এঙ্গেজিং অফার ক্যাম্পেইন শুরু করুন।`,
-        `হ্যাপী কাস্টমারদের অর্গানিক রিলস ও আনবক্সিং কন্টেন্ট ডিজাইন সোশ্যাল মিডিয়া চ্যানেলে রি-ডিস্ট্রিবিউট করুন।`,
-        `হোম ডেলিভারি হাবের সাথে সমন্বয় করে পিক ও উৎসবের দিনে ফাস্ট শিপিং মেকানিজম গড়ে তুলুন।`
-      ]
+        `ঢাকা বাদেও বড় বিভাগীয় শহরগুলোতে ক্যাশ অন ডেলিভারি সহজ করে রিজিওনাল মার্কেট শেয়ার ক্যাপচার করা।`,
+        `সোশ্যাল মাধ্যমে ${tgt} কাস্টমারদের মধ্যে পরিচিত ফিমেল ও মেল মাইক্রো-ইনফ্লুয়েন্সারদের কন্টেন্ট পাঠানো।`,
+        `${desc ? `"${desc}" মিশনকে` : `আপনার ইউনিক ডাইমেনশন`} ফোকাস করে প্রিমিয়াম কাস্টম কাডবোর্ড বক্স প্যাকেজিং তৈরি করা।`
+      ],
+      highlight: `${name} ব্র্যান্ডের সামগ্রিক ডিজিটাল উপস্থিতি অত্যন্ত সম্ভাবনাময়।`
     },
     health_report: {
-      weekly_summary_bn: `এই সপ্তাহে ${name}-এর সামাজিক মাধ্যমে রিচ ছিল প্রায় ${(seed % 15) + 12}% ঊর্ধ্বমুখী।${website ? ` বিশেষ করে ${website} লিংকে ইউনিক ওডিয়েন্স ইনবক্স ভিজিট আগের চেয়ে প্রায় ৮% বৃদ্ধি পেয়েছে।` : ''} ফেসবুক ও ইনস্টাগ্রামে কাস্টমার স্যাটিসফ্যাকশন অনেক সন্তোষজনক ছিল।`,
+      weekly_summary_bn: `এই সপ্তাহে ${name}-এর সামাজিক মাধ্যমে রিচ ছিল প্রায় ${(seed % 15) + 12}% ঊর্ধ্বমুখী।${website ? ` বিশেষ করে ${website} লিংকে ইউনিক ওডিয়েন্স ইনবক্স ভিজিট আগের চেয়ে প্রায় ৮% বৃদ্ধি পেয়েছিল।` : ''} ফেসবুক ও ইনস্টাগ্রামে কাস্টমার স্যাটিসফ্যাকশন অনেক সন্তোষজনক ছিল।`,
       top_performing_content_bn: `কাস্টমার প্রশংসাপত্র সমৃদ্ধ আনবক্সিং রিলস ও ক্যানভাস স্টোরিটেলিং কন্টেন্টগুলো সর্বোচ্চ অর্গানিক এঙ্গেজমেন্ট লাভ করেছে।`,
       actions_bn: [
         `প্রতি সপ্তাহে অন্তত ১টি ওডিয়েন্স রিকমেন্ডেশন ভিডিও স্টোরি লাইভ প্রমোট বা স্পনসরড অ্যাড হিসেবে সেট করুন।`,
@@ -140,7 +139,23 @@ function generateScrapedBrandFallback(name: string, website?: string, category?:
         `বিজ্ঞাপন দাতা বাড়ার ফলে বিডিং চার্জ বৃদ্ধি এবং দীর্ঘমেয়াদে অরগানিক রিচ কমে যাওয়ার ক্ল্যাটারিং রিস্ক।`,
         `ক্যাপাসিটি প্রিপারেশন না নিয়ে ওভার-অর্ডারিং বা লজিস্টিক ট্র্যাকিং ফেইলুরের কারণে কাস্টমার নেতিবাচক সাড়া পাওয়ার আশঙ্কা।`
       ]
-    }
+    },
+    sales_timeline: [
+      { name: "Week 1", sales: 40 + (seed % 15), target: 50 },
+      { name: "Week 2", sales: 55 + (seed % 12), target: 60 },
+      { name: "Week 3", sales: 70 + (seed % 20), target: 70 },
+      { name: "Week 4", sales: 62 + (seed % 10), target: 75 },
+      { name: "Week 5", sales: 88 + (seed % 25), target: 80 },
+      { name: "Week 6", sales: 110 + (seed % 30), target: 95 }
+    ],
+    roi_timeline: [
+      { name: "Week 1", roi: 2.1 + ((seed % 5) / 10), previousRoi: 2.0 },
+      { name: "Week 2", roi: 2.6 + ((seed % 4) / 10), previousRoi: 2.3 },
+      { name: "Week 3", roi: 3.1 + ((seed % 6) / 10), previousRoi: 2.7 },
+      { name: "Week 4", roi: 2.8 + ((seed % 5) / 10), previousRoi: 2.9 },
+      { name: "Week 5", roi: 3.5 + ((seed % 8) / 10), previousRoi: 3.1 },
+      { name: "Week 6", roi: 4.2 + ((seed % 9) / 10), previousRoi: 3.4 }
+    ]
   };
 }
 
@@ -154,64 +169,22 @@ function generateChatFallback(prompt: string, isJson: boolean) {
   if (pStr.includes("brand twin") || pStr.includes(" soul")) {
     const nameStr = prompt.match(/Name:\s*([^\n]+)/i)?.[1]?.trim() || "BUP Spark Client";
     const categoryStr = prompt.match(/Category:\s*([^\n]+)/i)?.[1]?.trim() || "SME Brand";
-    const catType = getCategoryDesign(categoryStr);
 
     let toneList = ["উষ্ণ ও প্রিমিয়াম / Warm & Premium", "আকর্ষণীয় ও ট্রেন্ডি / Trendy", "বন্ধুত্বপূর্ণ ও সাবলীল / Conversational"];
-    let positioning = `${nameStr} হচ্ছে বাংলাদেশের একটি অনন্য ${categoryStr} ব্র্যান্ড, যা প্রতিটি কাস্টমারের সাধ্যের মধ্যে সেরা গুণগত মানের লাইফস্টাইল উপহার দেয়।`;
-    let keyMsg = [
-      {
-        bn: "আমাদের প্রতিটি ফ্যাব্রিক ও ডিজাইন তৈরি হয় আপনার আভিজাত্য ফুটিয়ে তুলতে অত্যন্ত নিখুঁত দক্ষতায়।",
-        en: "Our clothes and designs are meticulously crafted with precision to reflect your elegance."
-      },
-      {
-        bn: "ঐতিহ্য ও আধুনিকতার অপূর্ব সংমিশ্রণে আপনার প্রতিদিনের জীবন সুন্দর ও সাবলীল করে তুলতে আমরা প্রতিশ্রুতিবদ্ধ।",
-        en: "We are committed to making your daily life beautiful with a blend of heritage and modern design."
-      }
-    ];
-    let personas = [];
-    if (catType === "fashion") {
-      personas = [
-        {
-          emoji: "👩💼",
-          name: "তানজিলা রহমান",
-          desc: "A corporate professional in Dhaka who loves buying premium traditional outfits with fusion styles for special festive events.",
-          age_range: "24-34",
-          location: "Dhaka",
-          platform: "Instagram"
-        },
-        {
-          emoji: "🎓",
-          name: "সুমাইয়া নিশাত",
-          desc: "College fashion student hunting for creative, trendy daily aesthetics and accessories on a modest budget.",
-          age_range: "18-23",
-          location: "Chittagong",
-          platform: "TikTok / Facebook"
-        }
-      ];
-    } else {
-      personas = [
-        {
-          emoji: "👨💻",
-          name: "আদিল আহমেদ",
-          desc: "Young professional prioritizing highly hygienic, delicious gourmet recipes and express delivery for family dinners.",
-          age_range: "26-38",
-          location: "Dhaka",
-          platform: "Facebook / Google Maps"
-        }
-      ];
-    }
+    let positioning = `${nameStr} হচ্ছে বাংলাদেশের একটি অত্যন্ত নির্ভরযোগ্য ও প্রিমিয়াম ব্র্যান্ড ক্যাটাগরির কোম্পানি।`;
 
     return {
       tones: toneList,
-      positioning: positioning,
-      key_messages: keyMsg,
-      personas: personas,
-      hashtags: [
-        `#${nameStr.replace(/[^a-zA-Z0-9]/g, "")}`,
-        `#Bangladeshi${catType === "fashion" ? "Fashion" : "Eats"}`,
-        "#SMEBangladesh",
-        "#BUPSparkTwin"
-      ]
+      positioning,
+      key_messages: [
+        { bn: "সবচেয়ে বিশ্বাসযোগ্য কালেকশন এবং ১০০% খাঁটি পণ্য সরবরাহ।", en: "Most trusted collection and 100% authentic product delivery." },
+        { bn: "আপনার দৈনন্দিন জীবনে আরামদায়ক আভিজাত্যের স্পর্শ।", en: "A touch of comfortable elegance in your daily life." }
+      ],
+      personas: [
+        { emoji: "👩💼", name: "Saima Rahman", desc: "A corporate professional who loves buying premium outfits.", age_range: "25-35", location: "Dhaka", platform: "Instagram" },
+        { emoji: "🎓", name: "Tanvir Hasan", desc: "A university student looking for trendy accessories.", age_range: "18-24", location: "Chittagong", platform: "Facebook" }
+      ],
+      hashtags: ["#" + nameStr.replace(/\s+/g, ""), "#SupportLocalBD", "#MadeInBangladesh"]
     };
   }
 
@@ -281,7 +254,7 @@ function generateChatFallback(prompt: string, isJson: boolean) {
           platform: "Instagram",
           tier: "micro",
           followers: "45K",
-          engagement: "6.8%",
+          alignment: "6.8%",
           cpe: "৳১৮০",
           fit_score: 95,
           tags: ["Fashion", "Traditional", "Lifestyle"],
@@ -295,7 +268,7 @@ function generateChatFallback(prompt: string, isJson: boolean) {
           platform: "Instagram",
           tier: "nano",
           followers: "9.2K",
-          engagement: "8.9%",
+          alignment: "8.9%",
           cpe: "৳১৩০",
           fit_score: 91,
           tags: ["Foodie", "Quick Recipe", "Aesthetic Home"],
@@ -309,7 +282,7 @@ function generateChatFallback(prompt: string, isJson: boolean) {
           platform: "Instagram",
           tier: "macro",
           followers: "115K",
-          engagement: "4.2%",
+          alignment: "4.2%",
           cpe: "৳৪২০",
           fit_score: 87,
           tags: ["Luxury Style", "Makeup", "Trendy Vlogs"],
@@ -323,7 +296,7 @@ function generateChatFallback(prompt: string, isJson: boolean) {
           platform: "TikTok",
           tier: "micro",
           followers: "82K",
-          engagement: "7.1%",
+          alignment: "7.1%",
           cpe: "৳১৭০",
           fit_score: 93,
           tags: ["Vlogs", "Fashion Hacks", "Bangla Audio Trends"],
@@ -356,7 +329,7 @@ function generateChatFallback(prompt: string, isJson: boolean) {
   }
 
   return {
-    summary: "ব্র্যান্ডের ডিজিটাল উপস্থিতি এবং এঙ্গেজমেন্ট রেট পজিটিভ ট্রেন্ড ধারণ করছে।",
+    summary: "ব্র্যান্ডের ডিজিটাল উপস্থিতি এবং এঙ্গেজমেন্ট রেট পজিティブ ট্রেন্ড ধারণ করছে।",
     actions: [
       "নিয়মিত ক্রেতাদের রিয়েল ফিডব্যাক নিয়ে সোশ্যাল রিলস আকারে শেয়ার করুন।",
       "ফ্ল্যাট ডিসকাউন্ট না দিয়ে থিম-ভিত্তিক ফ্রি ডেলিভারি অফার বা স্পেশাল গিফট হ্যাম্পার দিতে পারেন।"
@@ -542,12 +515,28 @@ Directly compile your real-time grounded search findings into a valid JSON objec
       "<Contextual Bangla risk/hurdle 1>",
       "<Contextual Bangla risk/hurdle 2>"
     ]
-  }
+  },
+  "sales_timeline": [
+    {"name": "Week 1", "sales": 45, "target": 50},
+    {"name": "Week 2", "sales": 52, "target": 60},
+    {"name": "Week 3", "sales": 75, "target": 70},
+    {"name": "Week 4", "sales": 68, "target": 75},
+    {"name": "Week 5", "sales": 85, "target": 80},
+    {"name": "Week 6", "sales": 112, "target": 95}
+  ],
+  "roi_timeline": [
+    {"name": "Week 1", "roi": 2.2, "previousRoi": 2.0},
+    {"name": "Week 2", "roi: 2.7, "previousRoi": 2.3},
+    {"name": "Week 3", "roi": 3.2, "previousRoi": 2.7},
+    {"name": "Week 4", "roi": 2.9, "previousRoi": 2.9},
+    {"name": "Week 5", "roi": 3.6, "previousRoi": 3.1},
+    {"name": "Week 6", "roi": 4.5, "previousRoi": 3.4}
+  ]
 }
 `;
 
       const response = await aiClient.models.generateContent({
-        model: "gemini-3.5-flash",
+        model: "gemini-3.1-flash-lite",
         contents: combinedPrompt,
         config: {
           systemInstruction: "You are a specialized real-time search brand research compiler. Search the live web to gather real-world info on the requested brand, then directly return a valid JSON object matching the requested schema.",

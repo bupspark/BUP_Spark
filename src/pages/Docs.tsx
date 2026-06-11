@@ -125,7 +125,7 @@ export default function Docs() {
               <div className="inline-block px-3 py-1 bg-blue/10 text-blue rounded-full text-xs font-bold tracking-wider uppercase mb-6 border border-blue/20">Elevator Pitch</div>
               <h2 className="text-4xl font-display font-bold text-ink mb-6 relative z-10 leading-tight">AI-Powered Brand Simulation Engine</h2>
               <p className="text-lg text-ink/80 max-w-2xl leading-relaxed relative z-10 font-medium">
-                BUP Spark is a real-time intelligence dashboard that replaces expensive legacy sentiment analysis tools. We enable marketing teams to instantly build a "Brand Twin" and simulate market reactions using Gemini 3.5 Flash.
+                BUP Spark is a real-time intelligence dashboard that replaces expensive legacy sentiment analysis tools. We enable marketing teams to instantly build a "Brand Twin" and simulate market reactions using Gemini 3.1 Flash-Lite.
               </p>
             </div>
 
@@ -136,7 +136,7 @@ export default function Docs() {
                 </div>
                 <h3 className="font-bold text-ink text-2xl">The Problem</h3>
                 <p className="text-muted leading-relaxed">
-                  Brands struggle to quickly analyze market sentiment, monitor competitor share of voice, and generate actionable insights without expensive, highly complex enterprise tools. Additionally, building a consistent "brand persona" for tracking and daily campaign simulation is often a manual, time-consuming process that slows down marketing velocity.
+                  Local brands and small businesses in Bangladesh struggle to understand regional consumer sentiments across different districts like Dhaka, Chittagong, Sylhet, Rajshahi, Comilla, and Khulna. It is difficult to forecast campaign return on ad spend (ROAS) in BDT without expensive marketing agencies. Traditional tools lack local Bangla context and fail to show how individual districts vary in response to products and ads.
                 </p>
               </div>
               <div className="p-8 border border-ink/10 rounded-[2rem] space-y-4 bg-green/5 hover:bg-green/10 transition-colors">
@@ -145,28 +145,33 @@ export default function Docs() {
                 </div>
                 <h3 className="font-bold text-ink text-2xl">The Solution</h3>
                 <p className="text-muted leading-relaxed">
-                  BUP Spark solves this by introducing the "Brand Twin"—an AI-powered virtual replica of a brand's core identity. It features a unified, real-time dashboard displaying aggregated brand scores, structured sentiment timelines, and direct share-of-voice mapping. By leveraging Google's Gemini models via a secure Node.js backend proxy, the platform transforms raw social data into instant, one-click executive brand analysis reports with high-contrast highlights and concrete recommended actions.
+                  BUP Spark solves this by introducing the "Brand Twin"—an AI-powered replica of your brand's core identity. Using Gemini 3.1 Flash-Lite, businesses can easily track sentiment, compare with competitors, and simulate marketing performance of BDT campaign budgets across districts. Beautiful dashboards simplify complex statistics into actionable recommendations and clear ROI ratings.
                 </p>
               </div>
             </div>
 
             <div className="border border-ink/10 rounded-[2rem] p-10 bg-ink/5">
               <h3 className="font-bold text-ink text-2xl mb-8 text-center font-display">Core Execution Flow</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
                  <div className="text-center space-y-4">
                    <div className="mx-auto w-14 h-14 bg-white border border-ink/10 rounded-2xl shadow-sm flex items-center justify-center font-bold text-xl text-ink">1</div>
                    <h4 className="font-bold text-ink font-display">Define Brand Twin</h4>
-                   <p className="text-sm text-muted px-4">Input voice, core mission, and industry competitors.</p>
+                   <p className="text-sm text-muted px-2">Input voice, core mission, and industry competitors.</p>
                  </div>
                  <div className="text-center space-y-4">
                    <div className="mx-auto w-14 h-14 bg-blue border border-blue rounded-2xl shadow-sm flex items-center justify-center font-bold text-xl text-white">2</div>
                    <h4 className="font-bold text-ink font-display">AI Simulation Pipeline</h4>
-                   <p className="text-sm text-muted px-4">Gemini evaluates synthetic market data against your profile.</p>
+                   <p className="text-sm text-muted px-2">Gemini evaluates synthetic market data against your profile.</p>
                  </div>
-                 <div className="text-center space-y-4">
+                 <div className="text-center space-y-3 md:space-y-4">
                    <div className="mx-auto w-14 h-14 bg-green text-white border border-green rounded-2xl shadow-sm flex items-center justify-center font-bold text-xl">3</div>
                    <h4 className="font-bold text-ink font-display">Real-time Dashboard</h4>
-                   <p className="text-sm text-muted px-4">View actionable metrics, sentiment timelines, and insights.</p>
+                   <p className="text-sm text-muted px-2">View actionable metrics, sentiment timelines, and insights.</p>
+                 </div>
+                 <div className="text-center space-y-3 md:space-y-4">
+                   <div className="mx-auto w-14 h-14 bg-amber-500 text-white border border-amber-500 rounded-2xl shadow-sm flex items-center justify-center font-bold text-xl">4</div>
+                   <h4 className="font-bold text-ink font-display">Campaign Simulator</h4>
+                   <p className="text-sm text-muted px-2">Map local BDT budgets to district sentiments, CPA, and ROI projection.</p>
                  </div>
               </div>
             </div>
@@ -214,11 +219,30 @@ export default function Docs() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm mt-2">
                  <div>
                    <strong className="block text-ink mb-2 uppercase text-xs tracking-wider opacity-60">Models Employed</strong>
-                   <p className="text-muted leading-relaxed">Primary inference utilizes <span className="font-mono text-xs bg-ink/10 px-1.5 py-0.5 rounded text-ink">gemini-3.5-flash</span> via the <span className="font-mono text-xs bg-ink/10 px-1.5 py-0.5 rounded text-ink">@google/genai</span> TypeScript SDK. Selected explicitly for extreme cost-effectiveness and ultra-low latency JSON parameter extraction during campaign logic.</p>
+                   <p className="text-muted leading-relaxed">Primary inference utilizes <span className="font-mono text-xs bg-ink/10 px-1.5 py-0.5 rounded text-ink">gemini-3.1-flash-lite</span> via the <span className="font-mono text-xs bg-ink/10 px-1.5 py-0.5 rounded text-ink">@google/genai</span> TypeScript SDK. Selected explicitly for ultimate cost-effectiveness, zero conversational overhead, and ultra-low latency JSON parameter extraction during campaign logic.</p>
                  </div>
                  <div>
                    <strong className="block text-ink mb-2 uppercase text-xs tracking-wider opacity-60">Token Optimization Tactics</strong>
                    <p className="text-muted leading-relaxed">Strict structured JSON output format constraints injected within core system boundaries prevent the model from wasting tokens on conversational text or "chain-of-thought" leading, dropping response intervals dramatically.</p>
+                 </div>
+              </div>
+            </div>
+
+            <div className="space-y-6 flex flex-col p-8 border border-ink/10 rounded-[2rem] bg-indigo-50/20 hover:border-blue/30 transition-all">
+              <div className="flex items-center gap-3">
+                <div className="bg-blue/10 p-2.5 rounded-xl text-blue">
+                    <Target size={24} />
+                </div>
+                <h3 className="font-bold text-ink text-xl font-display">Bangladesh Campaign Simulation Engine</h3>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm mt-2">
+                 <div>
+                   <strong className="block text-ink mb-2 uppercase text-xs tracking-wider opacity-60">Regional Sentiment Mapping</strong>
+                   <p className="text-muted leading-relaxed">Models consumer behavior in major Bangladesh districts (Dhaka, Chittagong, Sylhet, Rajshahi, Comilla, Khulna). It uses local language preferences to predict regional popularity, click rates, and district-level ad performance.</p>
+                 </div>
+                 <div>
+                   <strong className="block text-ink mb-2 uppercase text-xs tracking-wider opacity-60">BDT Financial Modeling & Fallback</strong>
+                   <p className="text-muted leading-relaxed">Estimates ad campaign costs like CPA and ROI in BDT. It includes a built-in backup calculation model that provides accurate projections even when internet connection is lost or AI API limits are hit.</p>
                  </div>
               </div>
             </div>

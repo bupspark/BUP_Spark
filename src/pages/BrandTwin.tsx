@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useGemini } from '../hooks/useGemini';
 import { useBrand } from '../hooks/useBrand';
+import { useAuth } from '../hooks/useAuth';
 import { Sparkles, SlidersHorizontal } from 'lucide-react';
 import { toast } from '../hooks/useToast';
 
 export default function BrandTwin() {
+  const { user } = useAuth();
   const { generateJSON, isLoading, error } = useGemini();
   const { brand, setBrand } = useBrand();
-  const [formData, setFormData] = useState(brand);
 
+  const [formData, setFormData] = useState(brand);
   const [result, setResult] = useState<{
     tones: string[];
     positioning: string;
@@ -17,6 +19,46 @@ export default function BrandTwin() {
     hashtags: string[];
   } | null>(null);
 
+  // Sync state when global brand profile updates
+  useEffect(() => {
+    // If we have a saved form in localStorage for current twin result, prefer that on first load
+    if (user) {
+      const savedForm = localStorage.getItem(`bup_brand_twin_saved_form_${user.email}`);
+      if (savedForm) {
+        try {
+          setFormData({ ...brand, ...JSON.parse(savedForm) });
+          return;
+        } catch (e) {
+          // Fallback to active global brand
+        }
+      }
+    }
+    setFormData(brand);
+  }, [brand, user]);
+
+  // Load results from localStorage on mount/user login
+  useEffect(() => {
+    if (user) {
+      const savedTwin = localStorage.getItem(`bup_brand_twin_result_${user.email}`);
+      const savedForm = localStorage.getItem(`bup_brand_twin_saved_form_${user.email}`);
+      if (savedTwin) {
+        try {
+          setResult(JSON.parse(savedTwin));
+        } catch (e) {
+          setResult(null);
+        }
+      } else {
+        setResult(null);
+      }
+
+      if (savedForm) {
+        try {
+          setFormData(JSON.parse(savedForm));
+        } catch (e) {}
+      }
+    }
+  }, [user]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name) {
@@ -24,7 +66,7 @@ export default function BrandTwin() {
       return;
     }
     
-    // Save to global brand profile
+    // Save to global brand profile first
     setBrand(formData);
 
     const prompt = `Build a Brand Twin for this Bangladeshi brand:
@@ -53,8 +95,15 @@ Return JSON only:
     try {
       const data = await generateJSON(prompt, sys);
       setResult(data);
+      if (user) {
+        localStorage.setItem(`bup_brand_twin_result_${user.email}`, JSON.stringify(data));
+        // Save the exact form utilized to build this twin
+        localStorage.setItem(`bup_brand_twin_saved_form_${user.email}`, JSON.stringify(formData));
+      }
+      toast("Brand Twin successfully built!", "ok");
     } catch (e) {
       console.error(e);
+      toast("Server busy, please try again", "err");
     }
   };
 
@@ -63,7 +112,7 @@ Return JSON only:
       <div className="bg-ink text-cream rounded-xl p-8 lg:p-12 text-center border-t-4 border-amber shadow-lg relative overflow-hidden">
         <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-amber/10 rounded-full blur-3xl"></div>
         <div className="relative z-10 max-w-2xl mx-auto">
-          <h1 className="font-display font-extrabold text-3xl md:text-5xl mb-4 text-amber">Build Your Brand Twin</h1>
+          <h1 className="font-display font-extrabold text-3xl md:text-5xl mb-4 text-amber font-sans">Build Your Brand Twin</h1>
           <p className="text-muted text-lg">Define your brand's digital soul before simulating campaigns.</p>
         </div>
       </div>
@@ -98,10 +147,26 @@ Return JSON only:
                   value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})}
                   className="w-full bg-cream2 border border-ink/10 rounded-lg px-4 py-2.5 focus:outline-none focus:border-amber focus:ring-1 focus:ring-amber"
                 >
-                  <option>Fashion & Clothing</option>
-                  <option>Food & Beverage</option>
-                  <option>Electronics</option>
-                  <option>Beauty & Skincare</option>
+                  <option>Fashion & Clothing (পোশাক ও ফ্যাশন)</option>
+                  <option>Food & Beverage (খাবার ও পানীয়)</option>
+                  <option>Electronics & Gadgets (ইলেকট্রনিক্স ও গ্যাজেট)</option>
+                  <option>Beauty & Skincare (রূপচর্চা ও স্কিনকেয়ার)</option>
+                  <option>Home & Living (আসবাবপত্র ও ডেকোর)</option>
+                  <option>Groceries & Superstore (মুদি ও নিত্যপ্রয়োজনীয় পণ্য)</option>
+                  <option>Handicrafts & Boutique (হস্তশিল্প ও বুটিক)</option>
+                  <option>E-learning & Courses (অনলাইন কোর্স ও শিক্ষা)</option>
+                  <option>Travel & Tourism (ভ্রমণ ও পর্যটন)</option>
+                  <option>Health & Fitness (স্বাস্থ্য ও ফিটনেস)</option>
+                  <option>Software & IT Services (সফটওয়্যার ও আইটি সেবা)</option>
+                  <option>Jewelry & Accessories (গহনা ও অ্যাক্সেসরিজ)</option>
+                  <option>Leather Goods & Footwear (চামড়াজাত পণ্য ও জুতো)</option>
+                  <option>Organic & Herbal Products (অর্গানিক ও ভেষজ পণ্য)</option>
+                  <option>Toys & Kids Items (খেলনা ও বাচ্চাদের সামগ্রী)</option>
+                  <option>Automobile & Accessories (অটোমোবাইল ও এক্সেসরিজ)</option>
+                  <option>Real Estate & Housing (আবাসন ও রিয়েল এস্টেট)</option>
+                  <option>Sports Equipment & Outdoors (খেলাধুলা ও আউটডোর সামগ্রী)</option>
+                  <option>Gig economy & Freelance Agency (গিগ ইকোনমি ও কুটির শিল্প)</option>
+                  <option>Stationery & Gift items (স্টেশনারি ও গিফট আইটেম)</option>
                 </select>
               </div>
               <div>
@@ -110,10 +175,17 @@ Return JSON only:
                   value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})}
                   className="w-full bg-cream2 border border-ink/10 rounded-lg px-4 py-2.5 focus:outline-none focus:border-amber focus:ring-1 focus:ring-amber"
                 >
-                  <option>৳500–৳2,000</option>
-                  <option>৳2,000–৳8,000</option>
-                  <option>৳8,000–৳25,000</option>
-                  <option>৳25,000+</option>
+                  <option>৳0–৳250 (আল্ট্রা-বাজেট বা ডেইলি এসেনশিয়ালস)</option>
+                  <option>৳250–৳500 (বাজেট ফ্রেন্ডলি)</option>
+                  <option>৳500–৳1,000 (স্ট্যান্ডার্ড বাজেট রেঞ্জ)</option>
+                  <option>৳1,000–৳2,500 (মধ্যম মানের রেঞ্জ)</option>
+                  <option>৳2,500–৳5,000 (সেমি-প্রিমিয়াম রেঞ্জ)</option>
+                  <option>৳5,000–৳10,000 (প্রিমিয়াম ডেইলি)</option>
+                  <option>৳10,000–৳20,000 (সেমি-লাক্সারি)</option>
+                  <option>৳20,000–৳50,000 (লাক্সারি সামগ্রী)</option>
+                  <option>৳50,000–৳1,00,000 (প্রফেশনাল ও বড় গ্যাজেট)</option>
+                  <option>৳1,00,000–৳2,50,000 (হাই-এন্ড এন্টারপ্রাইজ বা লাক্সারি কারুশিল্প)</option>
+                  <option>৳2,50,000+ (উচ্চ মূল্যের হেভি ইনভেস্টমেন্ট)</option>
                 </select>
               </div>
             </div>

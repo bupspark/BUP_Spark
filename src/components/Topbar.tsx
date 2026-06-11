@@ -7,8 +7,6 @@ const PAGE_TITLES: Record<string, string> = {
   '/brand-twin': 'Brand Twin Builder',
   '/simulator': 'Campaign Simulator',
   '/content': 'Content Engine',
-  '/creators': 'Creator Match',
-  '/health': 'Brand Health',
 };
 
 export function Topbar({ onMenuClick }: { onMenuClick: () => void }) {

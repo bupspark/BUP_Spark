@@ -25,7 +25,7 @@ This application is built with a highly optimized **full-stack React & Express**
 
 *   **Frontend**: React (v18+), Vite, and [Tailwind CSS](https://tailwindcss.com/) for fluid, modern, responsive aesthetics and typography.
 *   **Backend Server**: Node.js & Express (`server.ts`) serving as a secure server-side proxy for handling Gemini model generation, avoiding API key leaks to browser inspector tools.
-*   **AI Engine**: `@google/genai` powered by `gemini-3.5-flash` for high-speed, cost-effective content generation.
+*   **AI Engine**: `@google/genai` powered by `gemini-3.1-flash-lite` for high-speed, cost-effective content generation.
 *   **Build System**: High-speed, robust automated output utilizing Vite for frontend bundle minification, and `esbuild` to compile backend TypeScript files into single, optimized CommonJS bundles (`dist/server.cjs`).
 
 ---

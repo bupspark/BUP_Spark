@@ -9,8 +9,6 @@ const NAV_ITEMS = [
   { path: '/brand-twin', label: 'Brand Twin Builder', icon: SlidersHorizontal },
   { path: '/simulator', label: 'Campaign Simulator', icon: BarChart3 },
   { path: '/content', label: 'Content Engine', icon: PenTool },
-  { path: '/creators', label: 'Creator Match', icon: Users },
-  { path: '/health', label: 'Brand Health', icon: Heart },
   { path: '/docs', label: 'Technical Docs', icon: Book },
 ];
 
